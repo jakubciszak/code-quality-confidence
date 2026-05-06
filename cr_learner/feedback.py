@@ -1,12 +1,17 @@
-"""GitLab webhook receiver for feedback loop.
+"""Webhook receiver for the feedback loop — supports GitLab and GitHub.
 
-Listens for GitLab system hooks / project hooks and updates lesson scores:
+GitLab events handled
+---------------------
+* ``Emoji Hook``          → award (+1) or unaward (−1) on a note
+* ``Note Hook``           → reply to a bot comment, analysed for sentiment
+* ``Merge Request Hook``  → detect resolved discussions
 
-* ``emoji`` event  → award (+1) or unaward (-1) on a note → :func:`_handle_award`
-* ``note`` event   → reply to a bot comment analysed for sentiment →
-                     ``reply_positive`` / ``reply_negative``
-* ``merge_request`` event with ``action=update`` → check if a discussion was
-  resolved → ``resolve``
+GitHub events handled
+---------------------
+* ``pull_request_review``         → approved review → resolve (+)
+* ``pull_request_review_comment`` → inline comment reply, analysed for sentiment
+* ``issue_comment``               → general PR comment, analysed for sentiment
+* ``reaction`` (create/delete)    → 👍 award / unaward on a comment
 
 Run with::
 
@@ -18,6 +23,8 @@ or directly::
 """
 from __future__ import annotations
 
+import hashlib
+import hmac
 import logging
 from typing import Any
 
@@ -32,40 +39,66 @@ logger = logging.getLogger(__name__)
 app = FastAPI(title="cr-learner feedback webhook", version="0.1.0")
 
 # ---------------------------------------------------------------------------
+# Shared helpers
+# ---------------------------------------------------------------------------
+
+_POSITIVE_KW = {"lgtm", "fixed", "done", "thanks", "good catch", "applied", "resolved"}
+_NEGATIVE_KW = {"disagree", "no", "won't fix", "wontfix", "not applicable", "false positive"}
+
+
+def _sentiment(body: str) -> str | None:
+    """Return 'reply_positive', 'reply_negative', or None."""
+    text = body.lower()
+    if any(kw in text for kw in _POSITIVE_KW):
+        return "reply_positive"
+    if any(kw in text for kw in _NEGATIVE_KW):
+        return "reply_negative"
+    return None
+
+
+# ---------------------------------------------------------------------------
 # Webhook signature verification
 # ---------------------------------------------------------------------------
 
 
-def _verify_signature(body: bytes, token: str | None) -> None:
+def _verify_gitlab_token(token: str | None) -> None:
     """Verify the GitLab webhook secret token."""
     expected = settings.webhook_secret
     if not expected:
-        return  # no secret configured — skip verification
+        return
     if token != expected:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
 
 
+def _verify_github_signature(body: bytes, signature: str | None) -> None:
+    """Verify the GitHub ``X-Hub-Signature-256`` HMAC."""
+    secret = settings.webhook_secret
+    if not secret:
+        return
+    if not signature or not signature.startswith("sha256="):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing signature")
+    expected = "sha256=" + hmac.new(
+        secret.encode(), body, hashlib.sha256
+    ).hexdigest()
+    if not hmac.compare_digest(expected, signature):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid signature")
+
+
 # ---------------------------------------------------------------------------
-# Event handlers
+# GitLab event handlers
 # ---------------------------------------------------------------------------
 
 
-def _handle_award(payload: dict[str, Any]) -> FeedbackEvent | None:
-    """Parse emoji (award/unaward) event."""
+def _gitlab_handle_award(payload: dict[str, Any]) -> FeedbackEvent | None:
     award = payload.get("object_attributes", {})
     project = payload.get("project", {})
     project_id = str(project.get("id", ""))
 
-    # Only care about emoji on notes (comments), not on the MR itself
     if award.get("awardable_type") != "Note":
         return None
 
-    # Find the discussion_id — GitLab doesn't provide it directly in the award
-    # event, so we piggyback on the note_id (used as a proxy key when no direct
-    # mapping is stored yet; a production system would look up the discussion).
     note_id = str(award.get("awardable_id", ""))
-    action = award.get("action", "")
-    value = 1 if action == "create" else -1
+    value = 1 if award.get("action", "") == "create" else -1
 
     return FeedbackEvent(
         project_id=project_id,
@@ -75,24 +108,14 @@ def _handle_award(payload: dict[str, Any]) -> FeedbackEvent | None:
     )
 
 
-def _handle_note(payload: dict[str, Any]) -> FeedbackEvent | None:
-    """Parse note (comment) event — detect positive/negative replies to bot."""
+def _gitlab_handle_note(payload: dict[str, Any]) -> FeedbackEvent | None:
     note = payload.get("object_attributes", {})
     project = payload.get("project", {})
     project_id = str(project.get("id", ""))
     discussion_id = note.get("discussion_id", "")
-    body: str = note.get("note", "").lower()
+    body: str = note.get("note", "")
 
-    # Simple heuristic: replies with positive keywords → positive feedback
-    positive_kw = {"lgtm", "fixed", "done", "thanks", "good catch", "applied", "resolved"}
-    negative_kw = {"disagree", "no", "won't fix", "wontfix", "not applicable", "false positive"}
-
-    event_type: str | None = None
-    if any(kw in body for kw in positive_kw):
-        event_type = "reply_positive"
-    elif any(kw in body for kw in negative_kw):
-        event_type = "reply_negative"
-
+    event_type = _sentiment(body)
     if not event_type or not discussion_id:
         return None
 
@@ -104,8 +127,7 @@ def _handle_note(payload: dict[str, Any]) -> FeedbackEvent | None:
     )
 
 
-def _handle_merge_request(payload: dict[str, Any]) -> list[FeedbackEvent]:
-    """Parse merge_request event — detect resolved discussions."""
+def _gitlab_handle_merge_request(payload: dict[str, Any]) -> list[FeedbackEvent]:
     attrs = payload.get("object_attributes", {})
     project = payload.get("project", {})
     project_id = str(project.get("id", ""))
@@ -113,9 +135,6 @@ def _handle_merge_request(payload: dict[str, Any]) -> list[FeedbackEvent]:
     if attrs.get("action") != "update":
         return []
 
-    # GitLab MR update events don't directly carry resolved-discussion info;
-    # in a production system you'd diff the discussion list via REST.
-    # Here we emit a resolve event for each discussion in the payload if present.
     events: list[FeedbackEvent] = []
     for discussion in payload.get("resolved_discussions", []):
         events.append(
@@ -130,6 +149,118 @@ def _handle_merge_request(payload: dict[str, Any]) -> list[FeedbackEvent]:
 
 
 # ---------------------------------------------------------------------------
+# GitHub event handlers
+# ---------------------------------------------------------------------------
+
+
+def _github_repo_id(payload: dict[str, Any]) -> str:
+    """Extract the ``owner/repo`` identifier from a GitHub webhook payload."""
+    repo = payload.get("repository", {})
+    return repo.get("full_name", str(repo.get("id", "")))
+
+
+def _github_handle_pr_review(payload: dict[str, Any]) -> FeedbackEvent | None:
+    """``pull_request_review`` — submitted review with 'approved' state."""
+    action = payload.get("action", "")
+    review = payload.get("review", {})
+    if action != "submitted" or review.get("state", "").upper() != "APPROVED":
+        return None
+
+    project_id = _github_repo_id(payload)
+    # Use the review ID as the discussion proxy key
+    review_id = str(review.get("id", ""))
+    if not review_id:
+        return None
+
+    return FeedbackEvent(
+        project_id=project_id,
+        discussion_id=review_id,
+        event_type="resolve",
+        value=1,
+    )
+
+
+def _github_handle_review_comment(payload: dict[str, Any]) -> FeedbackEvent | None:
+    """``pull_request_review_comment`` — inline review comment (reply detection)."""
+    action = payload.get("action", "")
+    if action != "created":
+        return None
+
+    comment = payload.get("comment", {})
+    project_id = _github_repo_id(payload)
+    # Use in_reply_to_id when available so we trace back to the root comment
+    discussion_id = str(comment.get("in_reply_to_id") or comment.get("id", ""))
+    body: str = comment.get("body", "")
+
+    event_type = _sentiment(body)
+    if not event_type or not discussion_id:
+        return None
+
+    return FeedbackEvent(
+        project_id=project_id,
+        discussion_id=discussion_id,
+        event_type=event_type,
+        value=1,
+    )
+
+
+def _github_handle_issue_comment(payload: dict[str, Any]) -> FeedbackEvent | None:
+    """``issue_comment`` — general PR comment (reply detection)."""
+    action = payload.get("action", "")
+    if action != "created":
+        return None
+
+    # Only care about PR comments, not plain issue comments
+    if "pull_request" not in payload.get("issue", {}):
+        return None
+
+    comment = payload.get("comment", {})
+    project_id = _github_repo_id(payload)
+    discussion_id = str(comment.get("id", ""))
+    body: str = comment.get("body", "")
+
+    event_type = _sentiment(body)
+    if not event_type or not discussion_id:
+        return None
+
+    return FeedbackEvent(
+        project_id=project_id,
+        discussion_id=discussion_id,
+        event_type=event_type,
+        value=1,
+    )
+
+
+def _github_handle_reaction(payload: dict[str, Any]) -> FeedbackEvent | None:
+    """``reaction`` — thumbs-up/thumbs-down on a PR comment."""
+    action = payload.get("action", "")  # "created" or "deleted"
+    reaction = payload.get("reaction", {})
+    content = reaction.get("content", "")
+
+    # Only treat 👍 (+1) and 👎 (-1) as meaningful signals
+    if content not in ("+1", "-1"):
+        return None
+
+    project_id = _github_repo_id(payload)
+    comment = payload.get("comment", {})
+    discussion_id = str(comment.get("id", ""))
+    if not discussion_id:
+        return None
+
+    if action == "created":
+        value = 1 if content == "+1" else -1
+    else:  # deleted
+        value = -1 if content == "+1" else 1
+
+    return FeedbackEvent(
+        project_id=project_id,
+        discussion_id=discussion_id,
+        event_type="award",
+        value=value,
+    )
+
+
+# ---------------------------------------------------------------------------
 # FastAPI endpoint
 # ---------------------------------------------------------------------------
 
@@ -137,32 +268,67 @@ def _handle_merge_request(payload: dict[str, Any]) -> list[FeedbackEvent]:
 @app.post("/webhook")
 async def webhook(
     request: Request,
+    # GitLab headers
     x_gitlab_token: str | None = Header(default=None, alias="X-Gitlab-Token"),
     x_gitlab_event: str | None = Header(default=None, alias="X-Gitlab-Event"),
+    # GitHub headers
+    x_hub_signature_256: str | None = Header(
+        default=None, alias="X-Hub-Signature-256"
+    ),
+    x_github_event: str | None = Header(default=None, alias="X-GitHub-Event"),
 ) -> dict[str, str]:
     body = await request.body()
-    _verify_signature(body, x_gitlab_token)
-
-    payload: dict[str, Any] = await request.json()
 
     events: list[FeedbackEvent] = []
 
-    if x_gitlab_event == "Emoji Hook":
-        event = _handle_award(payload)
-        if event:
-            events.append(event)
-    elif x_gitlab_event in ("Note Hook", "Confidential Note Hook"):
-        event = _handle_note(payload)
-        if event:
-            events.append(event)
-    elif x_gitlab_event in ("Merge Request Hook",):
-        events.extend(_handle_merge_request(payload))
+    if x_github_event:
+        # GitHub webhook
+        _verify_github_signature(body, x_hub_signature_256)
+        payload: dict[str, Any] = await request.json()
+
+        if x_github_event == "pull_request_review":
+            event = _github_handle_pr_review(payload)
+            if event:
+                events.append(event)
+        elif x_github_event == "pull_request_review_comment":
+            event = _github_handle_review_comment(payload)
+            if event:
+                events.append(event)
+        elif x_github_event == "issue_comment":
+            event = _github_handle_issue_comment(payload)
+            if event:
+                events.append(event)
+        elif x_github_event == "reaction":
+            event = _github_handle_reaction(payload)
+            if event:
+                events.append(event)
+
+        if events:
+            logger.info("Processed %d GitHub feedback event(s).", len(events))
+
+    elif x_gitlab_event:
+        # GitLab webhook
+        _verify_gitlab_token(x_gitlab_token)
+        payload = await request.json()
+
+        if x_gitlab_event == "Emoji Hook":
+            event = _gitlab_handle_award(payload)
+            if event:
+                events.append(event)
+        elif x_gitlab_event in ("Note Hook", "Confidential Note Hook"):
+            event = _gitlab_handle_note(payload)
+            if event:
+                events.append(event)
+        elif x_gitlab_event == "Merge Request Hook":
+            events.extend(_gitlab_handle_merge_request(payload))
+
+        if events:
+            logger.info("Processed %d GitLab feedback event(s).", len(events))
 
     if events:
         with LessonStore() as store:
             for ev in events:
                 store.apply_feedback(ev)
-        logger.info("Processed %d feedback event(s) from GitLab.", len(events))
 
     return {"status": "ok", "processed": str(len(events))}
 

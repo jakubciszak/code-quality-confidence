@@ -75,6 +75,7 @@ class MRData(BaseModel):
     approvals: list[str] = Field(default_factory=list)  # usernames who approved
     pipeline_status: str | None = None
     related_issues: list[int] = Field(default_factory=list)
+    platform: str = "gitlab"  # "gitlab" or "github"
 
 
 # ---------------------------------------------------------------------------

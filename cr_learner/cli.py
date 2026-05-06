@@ -2,7 +2,7 @@
 
 Commands
 --------
-mine        Fetch historical MRs from GitLab, extract lessons and store them.
+mine        Fetch historical PRs/MRs, extract lessons and store them.
 review      Given a diff (file or stdin), print extra_instructions.
 serve       Start the feedback webhook server.
 init-db     Initialise the database schema.
@@ -14,6 +14,8 @@ import sys
 import click
 
 from cr_learner.config import settings
+
+_PLATFORM_CHOICES = click.Choice(["gitlab", "github"], case_sensitive=False)
 
 
 @click.group()
@@ -42,51 +44,71 @@ def init_db() -> None:
 
 
 @cli.command()
-@click.option("--project-id", default=None, help="GitLab project ID (overrides config).")
+@click.option(
+    "--platform",
+    default=None,
+    type=_PLATFORM_CHOICES,
+    help="Source platform: 'gitlab' or 'github'. Overrides PLATFORM env var.",
+)
+@click.option(
+    "--project-id",
+    default=None,
+    help=(
+        "GitLab project ID  OR  GitHub 'owner/repo' slug. "
+        "Overrides GITLAB_PROJECT_ID / GITHUB_REPO env vars."
+    ),
+)
 @click.option(
     "--limit",
     default=50,
     show_default=True,
-    help="Number of recent merged MRs to process.",
+    help="Number of recent merged PRs/MRs to process.",
 )
 @click.option(
-    "--mr-iid",
+    "--pr-number",
     default=None,
     type=int,
-    help="Process a single MR by IID (ignores --limit).",
+    help="Process a single PR/MR by number (ignores --limit).",
 )
-def mine(project_id: str | None, limit: int, mr_iid: int | None) -> None:
-    """Extract lessons from historical GitLab MRs and store them."""
-    from cr_learner.extractors import LessonExtractor, MRExtractor
+def mine(
+    platform: str | None,
+    project_id: str | None,
+    limit: int,
+    pr_number: int | None,
+) -> None:
+    """Extract lessons from historical PRs/MRs and store them."""
+    from cr_learner.extractors import LessonExtractor, get_extractor
     from cr_learner.store import LessonStore
 
-    pid = project_id or settings.gitlab_project_id
-    extractor = MRExtractor(pid)
+    p = platform or settings.platform
+    pid = project_id or settings.default_project_id
+
+    extractor = get_extractor(platform=p, project_id=pid)
     lesson_extractor = LessonExtractor()
 
-    if mr_iid is not None:
-        iids = [mr_iid]
+    if pr_number is not None:
+        numbers = [pr_number]
     else:
-        click.echo(f"Fetching up to {limit} merged MRs from project {pid} …")
-        iids = extractor.list_merged_mr_iids(limit)
-        click.echo(f"Found {len(iids)} MRs.")
+        click.echo(f"Fetching up to {limit} merged PRs from {p}/{pid} …")
+        numbers = extractor.list_merged_pr_numbers(limit)
+        click.echo(f"Found {len(numbers)} PRs.")
 
     total_lessons = 0
     with LessonStore() as store:
         store.init_schema()
-        for iid in iids:
-            click.echo(f"  Processing MR !{iid} …", nl=False)
-            mr_data = extractor.extract(iid)
-            lessons_for_mr = 0
-            for discussion in mr_data.discussions:
+        for number in numbers:
+            click.echo(f"  Processing PR #{number} …", nl=False)
+            pr_data = extractor.extract(number)
+            lessons_for_pr = 0
+            for discussion in pr_data.discussions:
                 if not discussion.resolvable and not discussion.resolved:
                     continue
-                lesson = lesson_extractor.extract(mr_data, discussion)
+                lesson = lesson_extractor.extract(pr_data, discussion)
                 if lesson:
                     store.upsert(lesson)
-                    lessons_for_mr += 1
-            click.echo(f" {lessons_for_mr} lesson(s).")
-            total_lessons += lessons_for_mr
+                    lessons_for_pr += 1
+            click.echo(f" {lessons_for_pr} lesson(s).")
+            total_lessons += lessons_for_pr
 
     click.echo(f"\nDone. Stored {total_lessons} lesson(s) total.")
 
@@ -97,8 +119,8 @@ def mine(project_id: str | None, limit: int, mr_iid: int | None) -> None:
 
 
 @cli.command()
-@click.option("--project-id", default=None, help="GitLab project ID.")
-@click.option("--mr-iid", default=0, type=int, help="MR IID (informational).")
+@click.option("--project-id", default=None, help="Project ID or 'owner/repo' slug.")
+@click.option("--pr-number", default=0, type=int, help="PR/MR number (informational).")
 @click.option("--domain", default="general", show_default=True, help="Domain hint.")
 @click.option(
     "--diff-file",
@@ -114,7 +136,7 @@ def mine(project_id: str | None, limit: int, mr_iid: int | None) -> None:
 )
 def review(
     project_id: str | None,
-    mr_iid: int,
+    pr_number: int,
     domain: str,
     diff_file: str | None,
     top_k: int | None,
@@ -137,8 +159,8 @@ def review(
         raise SystemExit(1)
 
     ctx = ReviewContext(
-        project_id=project_id or settings.gitlab_project_id,
-        mr_iid=mr_iid,
+        project_id=project_id or settings.default_project_id,
+        mr_iid=pr_number,
         diff=diff,
         domain_hint=domain,
     )
@@ -164,7 +186,7 @@ def review(
 @click.option("--host", default=None, help="Bind host (overrides config).")
 @click.option("--port", default=None, type=int, help="Bind port (overrides config).")
 def serve(host: str | None, port: int | None) -> None:
-    """Start the GitLab feedback webhook server."""
+    """Start the feedback webhook server (supports GitLab and GitHub events)."""
     import uvicorn
 
     from cr_learner.feedback import app as feedback_app

@@ -7,10 +7,19 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
+    # Platform — "gitlab" or "github"
+    platform: str = "gitlab"
+
     # GitLab
     gitlab_url: str = "https://gitlab.com"
     gitlab_token: str = ""
     gitlab_project_id: str = ""
+
+    # GitHub
+    github_url: str = "https://api.github.com"
+    github_token: str = ""
+    # Format: "owner/repo", e.g. "myorg/myrepo"
+    github_repo: str = ""
 
     # PostgreSQL + pgvector
     database_url: str = "postgresql://cr_learner:cr_learner@localhost:5432/cr_learner"
@@ -42,6 +51,13 @@ class Settings(BaseSettings):
     def authority_for(self, domain: str) -> float:
         """Return authority weight for a domain, defaulting to 0.5."""
         return self.authority_weights.get(domain, 0.5)
+
+    @property
+    def default_project_id(self) -> str:
+        """Return the default project/repo identifier for the configured platform."""
+        if self.platform == "github":
+            return self.github_repo
+        return self.gitlab_project_id
 
 
 settings = Settings()
