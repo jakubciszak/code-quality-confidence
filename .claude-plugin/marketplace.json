@@ -1,0 +1,22 @@
+{
+  "name": "code-quality-confidence",
+  "owner": {
+    "name": "Jakub Ciszak",
+    "email": "j.ciszak@gmail.com"
+  },
+  "metadata": {
+    "description": "Swiss Cheese model tooling for agentic coding — stack imperfect defense layers (lint, hooks, tests, multi-agent review, docs/ADR discipline, human review) so their holes never align.",
+    "version": "0.2.0"
+  },
+  "plugins": [
+    {
+      "name": "swiss-cheese",
+      "source": "./plugins/swiss-cheese",
+      "description": "Layered defense (Swiss Cheese model) for agentic coding: initialize defense layers in any repo, token-frugal multi-agent code review from a single shared diff, autonomous quality loop, custom layer wizard, docs/ADR audit, and task knowledge-source discovery (Jira, Redmine, MCP).",
+      "version": "0.2.0",
+      "author": {
+        "name": "Jakub Ciszak"
+      }
+    }
+  ]
+}

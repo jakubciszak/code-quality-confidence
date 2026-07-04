@@ -1,0 +1,24 @@
+# Swiss Cheese: pre-commit layer — same checks as the scripted layers, one slice earlier.
+# Install: pip install pre-commit && pre-commit install
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-merge-conflict
+      - id: check-added-large-files
+      - id: detect-private-key
+      - id: end-of-file-fixer
+  - repo: local
+    hooks:
+      # Mirror the project's scripted layers here so pre-commit and
+      # check_layers.py can never disagree. Examples:
+      - id: lint
+        name: lint (swiss-cheese lint layer)
+        entry: ruff check
+        language: system
+        types: [python]
+      # - id: typecheck
+      #   name: typecheck (swiss-cheese typecheck layer)
+      #   entry: mypy src
+      #   language: system
+      #   pass_filenames: false
