@@ -1,0 +1,22 @@
+{
+  "name": "swiss-cheese",
+  "displayName": "Swiss Cheese — Layered Defense for Agentic Coding",
+  "version": "0.1.0",
+  "description": "No single defense layer is perfect — stack enough imperfect ones that the holes never align. This plugin initializes Swiss Cheese defense layers in your repository, runs a token-frugal multi-agent code review from one shared diff, works autonomously in a loop applying the layers, guides you through building custom layers, audits docs/ADRs/review style, and discovers where task knowledge lives (Jira, Redmine, MCP servers).",
+  "author": {
+    "name": "Jakub Ciszak",
+    "email": "j.ciszak@gmail.com"
+  },
+  "repository": "https://github.com/jakubciszak/code-quality-confidence",
+  "license": "MIT",
+  "keywords": [
+    "swiss-cheese",
+    "code-quality",
+    "code-review",
+    "security",
+    "layered-defense",
+    "agentic-coding",
+    "adr",
+    "quality-gates"
+  ]
+}

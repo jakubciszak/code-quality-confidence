@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "risk_profile": "standard",
+  "layers": [
+    {
+      "id": "instructions",
+      "type": "knowledge",
+      "enabled": true,
+      "notes": "CLAUDE.md §Swiss Cheese layers",
+      "holes": "agents drift from instructions in long sessions"
+    },
+    {
+      "id": "lint",
+      "type": "scripted",
+      "enabled": true,
+      "command": "ruff check .",
+      "fast": true,
+      "holes": "blind to logic and design defects"
+    },
+    {
+      "id": "typecheck",
+      "type": "scripted",
+      "enabled": true,
+      "command": "mypy src",
+      "fast": true,
+      "holes": "Any/casts bypass; runtime behavior invisible"
+    },
+    {
+      "id": "tests",
+      "type": "scripted",
+      "enabled": true,
+      "command": "pytest -q",
+      "fast": false,
+      "timeout": 1800,
+      "holes": "only as good as coverage; tests can be weakened to pass"
+    },
+    {
+      "id": "agent-hooks",
+      "type": "hook",
+      "enabled": true,
+      "on_edit": {
+        ".py": "ruff check --quiet {file}"
+      },
+      "holes": "per-file only; cross-file breakage invisible"
+    },
+    {
+      "id": "review",
+      "type": "agents",
+      "enabled": true,
+      "selection": "auto",
+      "style": "severity-gated",
+      "agents": ["correctness", "security", "architecture", "performance", "tests", "docs"],
+      "holes": "LLM slices hallucinate; auto-selection can skip a relevant lens"
+    },
+    {
+      "id": "docs",
+      "type": "knowledge",
+      "enabled": true,
+      "adr_dir": "docs/adr",
+      "holes": "docs rot silently between reviews"
+    },
+    {
+      "id": "human-review",
+      "type": "process",
+      "enabled": true,
+      "checklist": "docs/review-checklist.md",
+      "holes": "fatigue and rubber-stamping"
+    }
+  ],
+  "loop": {
+    "order": ["lint", "typecheck", "tests", "review"],
+    "max_iterations": 5
+  }
+}
