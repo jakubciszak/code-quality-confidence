@@ -17,6 +17,7 @@ session (exit 0): the layer has holes by design; other layers cover them.
 
 import json
 import os
+import shlex
 import subprocess
 import sys
 
@@ -43,12 +44,14 @@ def main():
         sys.exit(0)
 
     file_path = (payload.get("tool_input") or {}).get("file_path", "")
+    if file_path and not os.path.isabs(file_path):
+        file_path = os.path.join(cwd, file_path)
     ext = os.path.splitext(file_path)[1].lower()
     template = layer["on_edit"].get(ext)
     if not template or not os.path.exists(file_path):
         sys.exit(0)
 
-    cmd = template.replace("{file}", f'"{file_path}"')
+    cmd = template.replace("{file}", shlex.quote(file_path))
     try:
         proc = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True,
                               text=True, timeout=layer.get("timeout", 60))

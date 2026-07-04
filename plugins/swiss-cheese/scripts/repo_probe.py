@@ -12,6 +12,7 @@ linters, type checkers, docs, ADRs, hooks, Claude config, and detected
 Swiss Cheese state. Stdlib only — no third-party dependencies.
 """
 
+import glob
 import json
 import os
 import re
@@ -92,7 +93,14 @@ def sh(cmd, cwd):
 
 
 def exists_any(root, paths):
-    return [p for p in paths if os.path.exists(os.path.join(root, p))]
+    hits = []
+    for p in paths:
+        if any(ch in p for ch in "*?["):
+            if glob.glob(os.path.join(root, p)):
+                hits.append(p)
+        elif os.path.exists(os.path.join(root, p)):
+            hits.append(p)
+    return hits
 
 
 def main():
