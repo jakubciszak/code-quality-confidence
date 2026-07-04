@@ -61,10 +61,19 @@ git clone https://github.com/jakubciszak/code-quality-confidence.git
 
 See [plugins/swiss-cheese/README.md](plugins/swiss-cheese/README.md) for full docs, the layer catalog, and the config schema.
 
+## Development
+
+The repository eats its own cooking — two CI slices guard every PR (`.github/workflows/ci.yml`):
+
+- **Unit tests** for all plugin scripts: `pip install pytest && pytest -q` (27 tests covering repo probing, diff classification, review-agent selection, gate execution, hook behavior, status rendering)
+- **Manifest validation**: `claude plugin validate .` and `claude plugin validate plugins/swiss-cheese`
+
 ## Repository layout
 
 ```
 .claude-plugin/marketplace.json      # the marketplace catalog
+.github/workflows/ci.yml             # CI: pytest + claude plugin validate
+tests/                               # unit tests for the plugin scripts
 plugins/
   swiss-cheese/
     .claude-plugin/plugin.json       # plugin manifest
