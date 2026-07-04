@@ -41,4 +41,5 @@ Fan out the recommended review agents exactly as `/swiss-cheese:review` does (pa
 
 - Never weaken a layer to pass it (don't skip tests, don't lower lint severity, don't edit the config mid-loop). If a layer seems wrong, finish the loop and report it.
 - Keep a running one-line log per iteration: `iter N: lint ✅ tests ❌(2) → fixed → review: 1 high`.
+- When you reject a review finding as false positive/accepted-by-design, tell that agent to record the decision in its memory (see the learning loop in `/swiss-cheese:review`) — otherwise the next iteration re-litigates it.
 - Final report: what was built, iterations used, per-layer final status, unresolved findings, and any layer that repeatedly caught mistakes (that layer is earning its place in the stack).

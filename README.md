@@ -57,6 +57,8 @@ git clone https://github.com/jakubciszak/code-quality-confidence.git
 
 **The agent-hooks layer** ships as a plugin `PostToolUse` hook that is a silent no-op until a project opts in via `.swiss-cheese/config.json` — then every edited file gets an instant scripted check, with failures fed straight back to the agent.
 
+**Agents remember your project.** Every review agent has persistent memory (`memory: project`, stored in `.claude/agent-memory/` and committed to the repo): design decisions, ADR digests, trusted helpers, hot paths, confirmed false positives. Dismissed findings are recorded, so each review is sharper and cheaper than the last.
+
 See [plugins/swiss-cheese/README.md](plugins/swiss-cheese/README.md) for full docs, the layer catalog, and the config schema.
 
 ## Repository layout

@@ -52,6 +52,8 @@ Based on probe results, create — asking no further questions:
 
 Do NOT copy the plugin's review agents into the project — they ship with the plugin and are already available as `swiss-cheese:review-*`.
 
+**Agent memory**: the review agents use `memory: project` and will accumulate project knowledge in `.claude/agent-memory/`. Make sure this path is NOT gitignored (it's meant to be committed — that's how the team shares what the agents learned), while `.swiss-cheese/runs/` IS gitignored. Optionally seed `.claude/agent-memory/review-architecture/MEMORY.md` with 3–5 bullet design decisions you can infer from the probe (framework, module layout, persistence) — one line each, so the architecture agent starts warm.
+
 ## 5. Report
 
 Run:

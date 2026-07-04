@@ -42,6 +42,24 @@ Then in your project:
 
 Selection lives in `diff_snapshot.py` (deterministic, auditable — the manifest records every skip with a reason). Override with `--all` or `--only`.
 
+## Agents learn your project (persistent memory)
+
+Every agent ships with `memory: project`: a persistent directory under **`.claude/agent-memory/<agent>/`** that survives across sessions and is meant to be **committed**, so the whole team (and CI sessions) share what the agents learned.
+
+What accumulates there, per slice:
+
+- `review-architecture` — the module map, dependency rules, a one-line digest per ADR, accepted exceptions → it *enforces* your design decisions instead of rediscovering them each review
+- `review-security` — where auth lives, which sanitization helpers are trusted, traced sinks, confirmed false-positive patterns (mechanisms only — never secret values)
+- `review-correctness` — verified invariants, chronically fragile modules, recurring bug classes
+- `review-performance` — which paths are actually hot vs. cold, scale facts, past incidents
+- `review-tests` — test conventions, under-tested modules, rejected demands
+- `review-docs` — the documentation map, drift-prone sections
+- `repo-analyst` — stable structural facts with `file:line` anchors
+
+The learning loop is explicit: when you dismiss a finding as false positive or accepted-by-design during `/swiss-cheese:review` or `/swiss-cheese:loop`, the orchestrator tells the agent to record that decision — so the same pattern is not re-flagged next time. Memory doubles as a token saver: a warm agent greps its MEMORY.md instead of re-exploring the codebase.
+
+Housekeeping: agents keep MEMORY.md short and curated (the harness injects only its first ~200 lines), never write secrets into it, and never touch project files — the memory directory is their only writable location.
+
 ## Token frugality rules baked into the plugin
 
 1. Deterministic work is Python (stdlib only): probing, diffing, classification, agent selection, gate execution, status.
@@ -57,9 +75,11 @@ Selection lives in `diff_snapshot.py` (deterministic, auditable — the manifest
   config.json          # the defense stack (see templates/config.sample.json)
   knowledge.json       # task/domain knowledge sources
   runs/latest/         # last review: diff.patch + manifest.json
+.claude/
+  agent-memory/        # persistent per-agent memory (design decisions, patterns)
 ```
 
-Add `.swiss-cheese/runs/` to `.gitignore`; `config.json` and `knowledge.json` belong in the repo.
+Add `.swiss-cheese/runs/` to `.gitignore`; `config.json`, `knowledge.json` and `.claude/agent-memory/` belong in the repo.
 
 ### config.json layer types
 
