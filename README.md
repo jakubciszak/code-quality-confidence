@@ -51,6 +51,9 @@ Native **skills** (not legacy `commands/`). Consciously-invoked ones set `disabl
 | `/swiss-cheese:loop <task>` | Implement → `check_layers.py --fast` → guards → review → fix → repeat until green or the iteration budget runs out. |
 | `/swiss-cheese:pair` | A numbered list of hard, break-it questions on your change (Sonnet, read-only — can't write code). |
 | `/swiss-cheese:layer` · `:status` · `:knowledge` · `:audit` | Manage the stack, render it, wire task sources, grade the knowledge layers. |
+| `/swiss-cheese:custom-layer` | A five-step methodology for building a defense layer the catalog doesn't cover — name the failure mode, pick the cheapest mechanism, implement, analyze the new holes, test. |
+
+Two further skills are **model-invoked domain knowledge** rather than slash commands: **`swiss-cheese-model`** (the layer catalog, hole analysis, and risk profiles, loaded when reasoning about defense-in-depth or explaining why a gate missed a defect) and **`custom-layer`** (also reachable directly, above). A session sees only their one-line description until a task matches, so they carry no always-on cost.
 
 **Deterministic pre-LLM guards.** `run_guards.py` (stdlib-only) scans the diff **as data, never executing it** — `injection`, `secrets` (with redaction into `diff.redacted.patch`), `policy` (LOC/marker thresholds), `slopsquat` (typosquat/hallucinated deps), `high_risk`. Blockers are enforced at commit time by a `PreToolUse` hook (`exit 2`, zero tokens). Every internal error is `exit 0` — a layer may have holes, but it never kills the session.
 
@@ -78,11 +81,11 @@ tests/                               # unit tests for the plugin scripts
 plugins/
   swiss-cheese/
     .claude-plugin/plugin.json       # plugin manifest
-    skills/                          # native skills: review, loop, intent, pair, init, layer, ...
-    agents/                          # read-only lens subagents (review-*), intent-agent, pair-agent
+    skills/                          # native skills: review, loop, intent, pair, init, layer, custom-layer, swiss-cheese-model, ...
+    agents/                          # read-only subagents: lens set (review-*), intent-agent, pair-agent, repo-analyst
     scripts/                         # stdlib-only Python: config, guards/, diff, select, runners, audit
-    references/                      # layer catalog, injection patterns, vendor lists (load on demand)
-    templates/                       # config v2 sample, ADR, checklist, CLAUDE.md governance
+    references/                      # layer catalog, injection patterns, popular-packages list (load on demand)
+    templates/                       # config v2 sample, ADR, checklist, pre-commit config, CLAUDE.md governance
     hooks/hooks.json                 # PreToolUse guards + commit gate; PostToolUse agent-hooks + audit
     MEMORY.md                        # agent-memory index & protocol
 ```
