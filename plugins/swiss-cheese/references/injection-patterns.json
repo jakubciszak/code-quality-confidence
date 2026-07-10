@@ -1,0 +1,41 @@
+{
+  "hard": {
+    "severity": "blocker",
+    "patterns": [
+      "ignore previous instructions",
+      "ignore all previous instructions",
+      "ignore the above instructions",
+      "disregard previous instructions",
+      "<|im_start|>",
+      "[/INST]",
+      "<<SYS>>",
+      "export ANTHROPIC_API_KEY"
+    ]
+  },
+  "soft": {
+    "severity": "medium",
+    "patterns": [
+      "// ai: approve",
+      "# ai: approve",
+      "trust me",
+      "this is safe because",
+      "don't review",
+      "do not review"
+    ]
+  },
+  "control_files": {
+    "severity": "high",
+    "globs": [
+      ".claude/**",
+      "**/.claude/**",
+      "CLAUDE.md",
+      "**/CLAUDE.md",
+      "AGENTS.md",
+      "**/AGENTS.md",
+      ".cursorrules",
+      "**/.cursorrules",
+      "*mcp.json",
+      "**/*mcp.json"
+    ]
+  }
+}

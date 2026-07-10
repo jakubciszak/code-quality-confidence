@@ -1,0 +1,33 @@
+{
+  "_note": "Short curated lists of very popular packages per ecosystem. Used by the slopsquat guard for offline edit-distance-<=1 typosquat detection. Not exhaustive by design — a big list would slow the guard and add false positives; this catches the highest-value squats.",
+  "npm": [
+    "react", "react-dom", "lodash", "axios", "express", "chalk", "commander",
+    "debug", "moment", "request", "webpack", "babel-core", "typescript",
+    "eslint", "prettier", "jest", "vue", "next", "dotenv", "uuid", "yargs",
+    "socket.io", "mongoose", "redux", "rxjs", "cross-env", "node-fetch",
+    "colors", "bluebird", "underscore", "async", "classnames", "styled-components"
+  ],
+  "pypi": [
+    "requests", "numpy", "pandas", "flask", "django", "pytest", "setuptools",
+    "urllib3", "boto3", "pyyaml", "six", "click", "jinja2", "sqlalchemy",
+    "scipy", "matplotlib", "pillow", "cryptography", "certifi", "python-dateutil",
+    "beautifulsoup4", "aiohttp", "fastapi", "pydantic", "tqdm", "colorama",
+    "wheel", "attrs", "packaging", "typing-extensions", "scikit-learn"
+  ],
+  "packagist": [
+    "symfony/console", "guzzlehttp/guzzle", "monolog/monolog", "phpunit/phpunit",
+    "laravel/framework", "doctrine/orm", "psr/log", "symfony/http-foundation",
+    "nikic/php-parser", "twig/twig", "league/flysystem", "ramsey/uuid",
+    "phpstan/phpstan", "vlucas/phpdotenv", "fakerphp/faker"
+  ],
+  "crates": [
+    "serde", "tokio", "clap", "log", "rand", "regex", "syn", "quote",
+    "anyhow", "thiserror", "serde_json", "reqwest", "futures", "libc",
+    "chrono", "hyper", "async-trait", "tracing", "bytes", "itertools"
+  ],
+  "rubygems": [
+    "rails", "rake", "rspec", "bundler", "nokogiri", "puma", "sinatra",
+    "devise", "sidekiq", "pg", "redis", "faraday", "activerecord",
+    "rubocop", "json", "concurrent-ruby", "minitest", "actionpack"
+  ]
+}

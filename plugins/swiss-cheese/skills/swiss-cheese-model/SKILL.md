@@ -25,13 +25,15 @@ Two source framings this plugin merges:
 
 ## Layer catalog
 
-The full catalog with per-layer semantics, default commands, and known holes is in [layer-catalog.md](layer-catalog.md). Read it when configuring or explaining specific layers.
+The full catalog with per-layer semantics, default commands, and named holes is in [../../references/layer-catalog.md](../../references/layer-catalog.md). Read it when configuring or explaining specific layers.
 
 ## Project state contract
 
-- `.swiss-cheese/config.json` — the stack definition (see `templates/config.sample.json` in this plugin). Layer types: `scripted`, `hook`, `agents`, `knowledge`, `process`, `custom`.
-- `.swiss-cheese/knowledge.json` — task/domain knowledge sources (Jira, Redmine, MCP servers).
-- `.swiss-cheese/runs/latest/` — last review snapshot (`diff.patch` + `manifest.json`), produced by `scripts/diff_snapshot.py`, shared by all review agents.
+- `.swiss-cheese/config.json` — the stack definition, schema **v2** (see `templates/config.sample.json`). `layers` is an object keyed by id; each layer has `mode: auto | comment | skip`. Global gating is `block_at` / `warn_at` on the `blocker | high | medium | low` scale.
+- `.swiss-cheese/runners.json` — detected run commands per task (from `runner_detector.py`).
+- `.swiss-cheese/knowledge.json` — task/domain knowledge sources (Jira, Linear, MCP servers).
+- `.swiss-cheese/runs/latest/` — last run snapshot: `diff.patch`, `diff.redacted.patch` (what review lenses read), `manifest.json`, `guards.json`. Produced by `diff_snapshot.py` + `run_guards.py`, shared by all lenses.
+- `.swiss-cheese/audit/YYYY-MM.jsonl` — append-only audit log (hook-written backbone + model-written interpretive entries).
 
 ## Diagnosing an escape
 

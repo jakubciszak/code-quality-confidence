@@ -8,6 +8,11 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = REPO_ROOT / "plugins" / "swiss-cheese" / "scripts"
 
+# Plugin scripts import shared helpers (e.g. `import sc_common`); make the
+# scripts dir importable both for load_script() and for guards subpackage.
+if str(SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS))
+
 
 def load_script(name):
     """Import a plugin script as a module so its functions can be unit-tested."""

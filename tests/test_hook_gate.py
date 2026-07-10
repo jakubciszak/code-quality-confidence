@@ -83,3 +83,26 @@ def test_shell_metacharacters_in_path_are_quoted(tmp_path):
 
 def test_garbage_stdin_never_blocks(tmp_path):
     assert run_script("hook_gate", stdin="not json at all").returncode == 0
+
+
+def _write_config_v2(tmp_path, mode="auto"):
+    d = tmp_path / ".swiss-cheese"
+    d.mkdir(exist_ok=True)
+    (d / "config.json").write_text(json.dumps({"version": 2, "layers": {
+        "agent-hooks": {"mode": mode, "on_edit": {".py": CHECK_PY}}}}))
+
+
+def test_v2_config_agent_hooks_fires(tmp_path):
+    _write_config_v2(tmp_path)
+    f = tmp_path / "a.py"
+    f.write_text("def broken(:\n")
+    result = gate(tmp_path, str(f))
+    assert result.returncode == 2
+    assert "agent-hooks layer" in result.stderr
+
+
+def test_v2_config_skip_mode_is_noop(tmp_path):
+    _write_config_v2(tmp_path, mode="skip")
+    f = tmp_path / "a.py"
+    f.write_text("def broken(:\n")
+    assert gate(tmp_path, str(f)).returncode == 0

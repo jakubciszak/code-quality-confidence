@@ -172,10 +172,17 @@ def main():
     if os.path.exists(sc_config):
         try:
             cfg = json.load(open(sc_config, encoding="utf-8"))
-            swiss_cheese = {"initialized": True,
-                            "layers": [{"id": l.get("id"), "type": l.get("type"),
-                                        "enabled": l.get("enabled", True)}
-                                       for l in cfg.get("layers", [])]}
+            raw_layers = cfg.get("layers", [])
+            if isinstance(raw_layers, dict):  # v2: id -> layer
+                layers = [{"id": lid, "type": layer.get("type"),
+                           "mode": layer.get("mode", "auto")}
+                          for lid, layer in raw_layers.items()]
+            else:  # v1: list of layer dicts
+                layers = [{"id": layer.get("id"), "type": layer.get("type"),
+                           "enabled": layer.get("enabled", True)}
+                          for layer in raw_layers]
+            swiss_cheese = {"initialized": True, "version": cfg.get("version", 1),
+                            "layers": layers}
         except Exception:
             swiss_cheese = {"initialized": True, "layers": "unreadable"}
 
@@ -183,7 +190,7 @@ def main():
     result = {
         "root": root,
         "total_files": total_files,
-        "languages": [{"lang": l, "files": c} for l, c in languages[:6]],
+        "languages": [{"lang": lang, "files": count} for lang, count in languages[:6]],
         "top_dirs": sorted(sample_dirs)[:40],
         "dependency_manifests": exists_any(root, DEP_MANIFESTS),
         "tests": {"test_files": test_files,
