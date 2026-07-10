@@ -141,6 +141,39 @@ def test_v1_disabled_layer_is_skipped(tmp_path):
     assert json.loads(result.stdout)["results"][0]["status"] == "skipped"
 
 
+def test_extra_top_level_keys_are_preserved(tmp_path):
+    # Downstream scripts read arbitrary top-level keys (slopsquat_online,
+    # per-guard `guards` overrides, loop); the loader must not drop them.
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]
+                          / "plugins" / "swiss-cheese" / "scripts"))
+    from sc_common import load_config
+    write_v2(tmp_path, {"guards": {"mode": "auto"}},
+             slopsquat_online=True, guards={"injection": "comment"},
+             loop={"order": ["lint"], "max_iterations": 3})
+    cfg = load_config(str(tmp_path / ".swiss-cheese" / "config.json"))
+    assert cfg["slopsquat_online"] is True
+    assert cfg["guards"] == {"injection": "comment"}
+    assert cfg["loop"]["max_iterations"] == 3
+
+
+def test_v1_extra_keys_preserved(tmp_path):
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]
+                          / "plugins" / "swiss-cheese" / "scripts"))
+    from sc_common import load_config
+    d = tmp_path / ".swiss-cheese"
+    d.mkdir()
+    (d / "config.json").write_text(json.dumps(
+        {"version": 1, "risk_profile": "high",
+         "layers": [{"id": "lint", "type": "scripted", "command": PASS}]}))
+    cfg = load_config(str(d / "config.json"))
+    assert cfg["risk_profile"] == "high"
+    assert cfg["_notice"]  # still nudges to re-init
+
+
 def test_missing_config_degrades_not_explodes(tmp_path):
     result = run_script("check_layers", cwd=tmp_path)
     # No config -> defaults, no layers, ok=True, exit 0 (never kills session).

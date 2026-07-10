@@ -21,7 +21,7 @@ import shutil
 SEVERITY = ["low", "medium", "high", "blocker"]
 _RANK = {s: i for i, s in enumerate(SEVERITY)}
 
-V1_NOTICE = "config v1 — uruchom /swiss-cheese:init żeby dobrać nowe warstwy"
+V1_NOTICE = "config v1 — run /swiss-cheese:init to adopt the new layers"
 
 DEFAULTS = {
     "version": 2,
@@ -79,6 +79,9 @@ def _normalize_v1(cfg):
         entry["mode"] = mode
         layers[layer["id"]] = entry
     out = dict(DEFAULTS)
+    # Preserve any extra top-level keys (loop, risk_profile, ...) so callers
+    # that read them still see them; only `layers` is normalized/replaced.
+    out.update({k: v for k, v in cfg.items() if k != "layers"})
     out["layers"] = layers
     out["_notice"] = V1_NOTICE
     return out
@@ -108,9 +111,10 @@ def load_config(path):
         return _normalize_v1(raw)
 
     out = dict(DEFAULTS)
-    for key in ("block_at", "warn_at", "high_risk_paths", "commit_gate"):
-        if key in raw:
-            out[key] = raw[key]
+    # Preserve ALL top-level keys (block_at/warn_at/high_risk_paths/commit_gate
+    # plus arbitrary ones like `slopsquat_online`, per-guard `guards` overrides,
+    # `loop`, ...) that downstream scripts rely on; only `layers` is normalized.
+    out.update({k: v for k, v in raw.items() if k != "layers"})
     layers = raw.get("layers", {})
     # v2 layers may be a dict (id -> layer) or, defensively, a list of dicts.
     if isinstance(layers, list):
