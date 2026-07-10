@@ -1,74 +1,76 @@
 {
-  "version": 1,
-  "risk_profile": "standard",
-  "layers": [
-    {
-      "id": "instructions",
+  "version": 2,
+  "block_at": "high",
+  "warn_at": "medium",
+  "high_risk_paths": [
+    "**/auth/**",
+    "**/payments/**",
+    "**/billing/**",
+    "migrations/**",
+    "**/migrations/**"
+  ],
+  "commit_gate": "warn",
+  "layers": {
+    "instructions": {
+      "mode": "comment",
       "type": "knowledge",
-      "enabled": true,
-      "notes": "CLAUDE.md §Swiss Cheese layers",
+      "notes": "CLAUDE.md §Swiss Cheese governance",
       "holes": "agents drift from instructions in long sessions"
     },
-    {
-      "id": "lint",
-      "type": "scripted",
-      "enabled": true,
+    "lint": {
+      "mode": "auto",
       "command": "ruff check .",
+      "binary": "ruff",
       "fast": true,
       "holes": "blind to logic and design defects"
     },
-    {
-      "id": "typecheck",
-      "type": "scripted",
-      "enabled": true,
+    "typecheck": {
+      "mode": "auto",
       "command": "mypy src",
+      "binary": "mypy",
       "fast": true,
       "holes": "Any/casts bypass; runtime behavior invisible"
     },
-    {
-      "id": "tests",
-      "type": "scripted",
-      "enabled": true,
+    "tests": {
+      "mode": "auto",
       "command": "pytest -q",
       "fast": false,
       "timeout": 1800,
       "holes": "only as good as coverage; tests can be weakened to pass"
     },
-    {
-      "id": "agent-hooks",
-      "type": "hook",
-      "enabled": true,
-      "on_edit": {
-        ".py": "ruff check --quiet {file}"
-      },
-      "holes": "per-file only; cross-file breakage invisible"
+    "gitleaks": {
+      "mode": "auto",
+      "command": "gitleaks detect --no-banner",
+      "binary": "gitleaks",
+      "fast": true,
+      "holes": "regex-based; novel secret shapes slip through"
     },
-    {
-      "id": "review",
+    "guards": {
+      "mode": "auto",
+      "type": "guards",
+      "holes": "regex injection patterns lag new phrasings; slopsquat blind to compromised-but-real packages"
+    },
+    "review": {
+      "mode": "auto",
       "type": "agents",
-      "enabled": true,
-      "selection": "auto",
-      "style": "severity-gated",
-      "agents": ["correctness", "security", "architecture", "performance", "tests", "docs"],
-      "holes": "LLM slices hallucinate; auto-selection can skip a relevant lens"
+      "holes": "LLM slices hallucinate; selector can under-cover a lens"
     },
-    {
-      "id": "docs",
+    "docs": {
+      "mode": "comment",
       "type": "knowledge",
-      "enabled": true,
       "adr_dir": "docs/adr",
       "holes": "docs rot silently between reviews"
     },
-    {
-      "id": "human-review",
+    "human-review": {
+      "mode": "comment",
       "type": "process",
-      "enabled": true,
       "checklist": "docs/review-checklist.md",
       "holes": "fatigue and rubber-stamping"
     }
-  ],
+  },
+  "slopsquat_online": false,
   "loop": {
-    "order": ["lint", "typecheck", "tests", "review"],
+    "order": ["lint", "typecheck", "tests", "guards", "review"],
     "max_iterations": 5
   }
 }

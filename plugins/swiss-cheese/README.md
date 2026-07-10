@@ -2,7 +2,10 @@
 
 Layered defense (Swiss Cheese model) for agentic coding in Claude Code.
 
-Each quality gate is a slice of cheese with holes. Defects ship only when holes align across **all** slices — so the plugin's job is to stack cheap, diverse, imperfect layers and keep their holes from lining up.
+Each quality gate is a slice of cheese with holes. Defects ship only when holes align across **all** slices — so the plugin stacks cheap, diverse, imperfect layers and keeps their holes from lining up. Two design rules govern everything:
+
+1. **Progressive disclosure.** A session sees only each skill/agent's one-line `description` until a task matches it. Rule catalogs, vendor lists and patterns live in `references/` and load on demand. The costliest bytes are always-on descriptions, so there is **one** review-orchestrator skill instead of seven auto-invoked review agents.
+2. **Determinism where you need a guarantee; model judgment only for vigilance.** Anything that must be repeatable and auditable is a stdlib-only Python script (exit code, hook). The model can only ever *raise* coverage, never cut what a rule required.
 
 ## Quick start
 
@@ -14,96 +17,78 @@ Each quality gate is a slice of cheese with holes. Defects ship only when holes 
 Then in your project:
 
 ```
-/swiss-cheese:init          # analyze repo, choose layers, generate config + artifacts
-/swiss-cheese:review        # smart multi-agent review of your current changes
+/swiss-cheese:init          # probe repo + detect runners, choose layers, write config v2
+/swiss-cheese:intent        # reconstruct a ticket into a contract before coding
+/swiss-cheese:review        # layered multi-lens review of your current diff
 /swiss-cheese:loop <task>   # work autonomously, passing every layer in a loop
+/swiss-cheese:pair          # devil's-advocate questions on your change
 ```
 
-## Commands
+## Skills (native — not legacy `commands/`)
 
-- **`/swiss-cheese:init [low|standard|high]`** — probes the repo with `scripts/repo_probe.py` (languages, linters, tests, CI, docs, ADRs — one JSON, zero exploration), asks about risk profile / layers / review style / task sources, then writes `.swiss-cheese/config.json` and generates only what's missing: CLAUDE.md guardrail section, `docs/adr/` scaffold, review checklist, pre-commit config.
-- **`/swiss-cheese:review [--base <ref>] [--staged] [--all] [--only a,b]`** — `scripts/diff_snapshot.py` writes **one** `diff.patch` + `manifest.json` and deterministically picks which review agents this change warrants (security only when security-relevant paths/deps/risky patterns are touched; performance only for DB/hot-path/large changes; tests always when code changed without tests; …). Selected agents run in parallel, all reading the same file. Output: one deduplicated, severity-ranked report plus which slices ran/were skipped and why.
-- **`/swiss-cheese:loop <task>`** — implement, then iterate: `check_layers.py --fast` → fix → full gates → agent review → fix blockers/highs → repeat (bounded by `loop.max_iterations`). Never weakens a layer to pass it. Can pull tasks from configured knowledge sources (Jira/Redmine via MCP).
-- **`/swiss-cheese:layer [add <id> | custom | list]`** — predefined layers from the catalog, or a guided custom-layer wizard: name the failure mode → pick the cheapest mechanism (script > hook > agent > process) → build it together → name its holes → test it on a real defect.
-- **`/swiss-cheese:audit`** — grades the knowledge layers (README, CONTRIBUTING, ARCHITECTURE, ADRs, PR template, CODEOWNERS, SECURITY.md, review style) and proposes the top 3 fixes by risk-reduction-per-effort. Proposes concrete first ADRs from decisions already visible in the code.
-- **`/swiss-cheese:knowledge [tracker]`** — asks where tasks and domain knowledge live, then *searches* for integrations (already-connected MCP servers → registry/plugin search → web) instead of guessing; records the result in `.swiss-cheese/knowledge.json` and CLAUDE.md.
-- **`/swiss-cheese:status`** — renders the stack, disabled layers, and missing catalog layers via `scripts/layer_status.py`.
+Interactive entry points are **skills**. The consciously-invoked ones set `disable-model-invocation: true` so they never fire on their own.
+
+- **`init`** — probes with `repo_probe.py` and `runner_detector.py` (detects the exact `test`/`lint`/`typecheck` command via Makefile → package.json → composer → pyproject → justfile → Taskfile → docker-compose → binaries, instead of guessing). Proposes `high_risk_paths` from a directory probe and a `permissions.deny` stanza — **never** editing `.claude/settings.json` itself.
+- **`review`** — orchestrator: `diff_snapshot` → `run_guards` → `select_agents` (a deterministic lens **floor**) → parallel lens subagents on the **redacted** diff → one deduplicated, severity-ranked report.
+- **`loop`** — implement → `check_layers.py --fast` → guards → review → fix → repeat, bounded by `loop.max_iterations`. Never weakens a layer to pass it.
+- **`intent`** (Haiku) — reconstructs intent, acceptance criteria, test plan, scope guards, risk class, and a ready `AI-disclosure` block. Stops; writes no code.
+- **`pair`** (Sonnet) — a numbered list of hard questions that try to break the approach; read-only, so it physically can't write code.
+- **`layer`**, **`status`**, **`knowledge`**, **`audit`** — manage the stack, render it, wire task sources, grade the knowledge layers.
+
+## The deterministic pre-LLM layer: guards
+
+Before any model is spent, `run_guards.py` scans the diff **as data, never executing it**, and writes `guards.json`:
+
+| guard | catches | severity |
+|---|---|---|
+| `injection` | prompt-injection tokens, comment-and-control phrasings, edits to agent-control files (`.claude/**`, `CLAUDE.md`, `*mcp.json`) | blocker / medium / high |
+| `secrets` | credentials — and **redacts them** into `diff.redacted.patch` (what review lenses read) | blocker / high |
+| `policy` | ≥2000 LOC (blocker) / ≥500 (medium); high-risk path without `human-reviewed`; >100 LOC without `AI-disclosure` | blocker / high / medium |
+| `slopsquat` | typosquatted deps (offline edit-distance to popular packages) and, opt-in online, missing/too-new registry records | high / medium |
+| `high_risk` | changes under `high_risk_paths` → forces `escalate` | high |
+
+Blockers are enforced at **commit time** by a `PreToolUse` hook (`guard_hook.py`) — a hard `exit 2` with zero token cost. Every internal error is `exit 0`: a layer may have holes, but it must never kill the session.
 
 ## The review layer is itself Swiss cheese
 
-| Sub-agent | Lens | Runs when |
-|---|---|---|
-| `review-correctness` | logic, edge cases, error handling, races | any code/db/config change |
-| `review-security` | injection, authz, secrets, deps, fail-open | security paths, deps, CI, risky added lines |
-| `review-architecture` | boundaries, coupling, ADR consistency, API design | new modules, many files, deps, API surface |
-| `review-performance` | N+1, unbounded IO, hot-loop waste | DB changes, hot-path modules, large diffs |
-| `review-tests` | coverage gaps, weakened/deleted tests, mock theater | code without test changes, or tests changed |
-| `review-docs` | doc drift, missing ADRs, comment rot | docs changed, or API changed without docs |
+`select_agents.py` is a pure function of `manifest.json` + `guards.json`. It returns **two separate fields**, and the split is the point:
 
-Selection lives in `diff_snapshot.py` (deterministic, auditable — the manifest records every skip with a reason). Override with `--all` or `--only`.
+- `required` — an **unremovable** lens set, computed by rule (code → `core`; code without tests → `tests`; high-risk path or ≥8 files → `staff`; API surface → `architecture`; dependency change → slopsquat-heavy `security` + `staff`; …). Never empty for a non-empty diff.
+- `escalation_allowed` — whether the model may **add** lenses when the diff smells riskier than the metrics caught. The model's only lever raises vigilance; it can never lower the floor.
 
-## Agents learn your project (persistent memory)
+Lenses (`review-core`, `-security`, `-tests`, `-performance`, `-architecture`, `-docs`, `-staff`) are read-only (`tools: Read, Grep, Glob`), spawned **explicitly** in parallel, each returning only its verdict — independent slices don't infect each other's reasoning. On a high-risk path, `architecture` and `staff` escalate to **Opus**. `adr_loader.py` ranks ADRs by token overlap with the diff and hands the deep lenses only the top-N paths.
 
-Every agent ships with `memory: project`: a persistent directory under **`.claude/agent-memory/<agent>/`** that survives across sessions and is meant to be **committed**, so the whole team (and CI sessions) share what the agents learned.
+Every finding carries a fifth field, **`verification`**: the test/assertion/lint rule that would catch it (or `manual: <why>`) — operationalizing "don't ask the model to verify; ask it to write a script that verifies."
 
-What accumulates there, per slice:
+## Config v2
 
-- `review-architecture` — the module map, dependency rules, a one-line digest per ADR, accepted exceptions → it *enforces* your design decisions instead of rediscovering them each review
-- `review-security` — where auth lives, which sanitization helpers are trusted, traced sinks, confirmed false-positive patterns (mechanisms only — never secret values)
-- `review-correctness` — verified invariants, chronically fragile modules, recurring bug classes
-- `review-performance` — which paths are actually hot vs. cold, scale facts, past incidents
-- `review-tests` — test conventions, under-tested modules, rejected demands
-- `review-docs` — the documentation map, drift-prone sections
-- `repo-analyst` — stable structural facts with `file:line` anchors
+`.swiss-cheese/config.json`: `layers` is an object keyed by id, each with `mode: auto | comment | skip`. Global gating is `block_at` / `warn_at` on the `blocker | high | medium | low` scale. `check_layers.py` reports every layer as **passed | failed | skipped** — a missing binary is `skipped`, never a silent pass — and computes `ok` **only from `auto` layers that `failed`**. A v1 config still runs (defaults + a one-line nudge to re-init).
 
-The learning loop is explicit: when you dismiss a finding as false positive or accepted-by-design during `/swiss-cheese:review` or `/swiss-cheese:loop`, the orchestrator tells the agent to record that decision — so the same pattern is not re-flagged next time. Memory doubles as a token saver: a warm agent greps its MEMORY.md instead of re-exploring the codebase.
+## Audit log — split by observability
 
-Housekeeping: agents keep MEMORY.md short and curated (the harness injects only its first ~200 lines), never write secrets into it, and never touch project files — the memory directory is their only writable location.
+`audit_log.py` appends to `.swiss-cheese/audit/YYYY-MM.jsonl` (no tokens; the plugin never reads it back into a model):
 
-## Token frugality rules baked into the plugin
+- **System events** the harness *can* see are written by a **hook** — an uninterpreted, complete backbone: `agent_spawned`, `layer_result`, `policy_block`, `guard_finding`.
+- **Interpretive events** only the model knows the *why* of are written by the model through the script, **fail-closed**: a review finding is retired **only** after a `finding_dismissed` entry — a forgotten log line leaves the finding *active* (visible and safe), not silently dropped.
 
-1. Deterministic work is Python (stdlib only): probing, diffing, classification, agent selection, gate execution, status.
-2. The diff is generated once per review and shared as a file; agent prompts contain a path, never content.
-3. Agents are selected by change content; a docs-only diff never pays for six agents.
-4. Scripted gates run as one `check_layers.py` call returning compact JSON with only failure tails.
-5. Review agents are read-only, lane-scoped, and output a fixed one-line-per-finding format.
+## Agent memory
+
+Lenses ship with `memory: project` (committed under `.claude/agent-memory/`, shared team knowledge). `MEMORY.md` indexes topic files by prefix (`feedback_`, `project_`, `reference_`, `arch_`, `patterns_`), unified on the `metadata.type` key. Agents **revise** their own entries (`**UPDATE (<ref>):**`, `**STALE:**`, `**RESOLVED:**`) and write **only** on three hard triggers: a finding dismissed, a durable convention discovered, or an entry gone stale.
 
 ## Project state
 
 ```
 .swiss-cheese/
-  config.json          # the defense stack (see templates/config.sample.json)
+  config.json          # the defense stack, schema v2 (see templates/config.sample.json)
+  runners.json         # detected run commands per task
   knowledge.json       # task/domain knowledge sources
-  runs/latest/         # last review: diff.patch + manifest.json
+  runs/latest/         # diff.patch + diff.redacted.patch + manifest.json + guards.json
+  audit/YYYY-MM.jsonl  # append-only audit trail
 .claude/
-  agent-memory/        # persistent per-agent memory (design decisions, patterns)
+  agent-memory/        # persistent per-lens memory
 ```
 
-Add `.swiss-cheese/runs/` to `.gitignore`; `config.json`, `knowledge.json` and `.claude/agent-memory/` belong in the repo.
-
-### config.json layer types
-
-| type | meaning | executed by |
-|---|---|---|
-| `scripted` | shell command, exit code = verdict | `check_layers.py`, pre-commit, CI |
-| `hook` | per-edit command via `on_edit` map | plugin PostToolUse hook (`hook_gate.py`) |
-| `agents` | review sub-agents | `/swiss-cheese:review`, loop |
-| `knowledge` | docs/ADR discipline | audit + review-docs agent |
-| `process` | human procedures (checklists) | humans |
-| `custom` | anything with a named failure mode | per its mechanism |
-
-Every layer should declare `"holes"` — what it is known to miss. Unnamed holes are the ones that align.
-
-## The agent-hooks layer
-
-The plugin registers a `PostToolUse` hook on `Write|Edit`. It is a **silent no-op** unless the current project's config contains an enabled `agent-hooks` layer with an `on_edit` map, e.g.:
-
-```json
-{"id": "agent-hooks", "type": "hook", "enabled": true,
- "on_edit": {".py": "ruff check --quiet {file}", ".ts": "npx eslint {file}"}}
-```
-
-On failure the check's output is fed back to the agent immediately (exit 2), so the defect is fixed seconds after the edit instead of surfacing at review. Internal errors never block the session — this slice has holes by design; the later slices cover them.
+`config.json`, `runners.json`, `knowledge.json` and `.claude/agent-memory/` belong in the repo; `.swiss-cheese/runs/` is gitignored.
 
 ## Sources
 

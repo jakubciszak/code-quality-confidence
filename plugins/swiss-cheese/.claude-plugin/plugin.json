@@ -1,8 +1,8 @@
 {
   "name": "swiss-cheese",
   "displayName": "Swiss Cheese — Layered Defense for Agentic Coding",
-  "version": "0.2.0",
-  "description": "No single defense layer is perfect — stack enough imperfect ones that the holes never align. This plugin initializes Swiss Cheese defense layers in your repository, runs a token-frugal multi-agent code review from one shared diff, works autonomously in a loop applying the layers, guides you through building custom layers, audits docs/ADRs/review style, and discovers where task knowledge lives (Jira, Redmine, MCP servers).",
+  "version": "0.3.0",
+  "description": "No single defense layer is perfect — stack enough imperfect ones that the holes never align. Deterministic stdlib-only guards scan the diff pre-LLM (injection, secrets+redaction, policy, slopsquat); a deterministic selector computes an unremovable review-lens floor; independent read-only lens subagents review the redacted diff in parallel; a fail-closed audit log and per-lens memory make it sharper each run. Native skills, config v2, commit + guard hooks.",
   "author": {
     "name": "Jakub Ciszak",
     "email": "j.ciszak@gmail.com"

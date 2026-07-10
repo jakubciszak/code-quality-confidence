@@ -15,52 +15,46 @@ def test_classify_paths():
     assert snap.classify("src/service.py") == {"code"}
 
 
-def _agents(picked):
-    return set(picked)
-
-
-def test_select_agents_security_change():
-    files = [{"path": "src/auth/login.py", "added": 10, "deleted": 0,
-              "status": "M", "categories": {"code", "security"}}]
-    picked, skipped = snap.select_agents(files, {"risky_lines": {"password"}, "api_surface": False}, False)
-    assert {"correctness", "security", "tests"} <= _agents(picked)
-    assert "performance" in skipped
-
-
-def test_select_agents_docs_only_change():
-    files = [{"path": "README.md", "added": 3, "deleted": 1,
-              "status": "M", "categories": {"docs"}}]
-    picked, skipped = snap.select_agents(files, {"risky_lines": set(), "api_surface": False}, False)
-    assert _agents(picked) == {"docs"}
-    assert set(skipped) == {"correctness", "security", "architecture", "performance", "tests"}
-
-
-def test_select_agents_forced_all():
-    picked, skipped = snap.select_agents([], {"risky_lines": set(), "api_surface": False}, True)
-    assert _agents(picked) == {"correctness", "security", "architecture",
-                               "performance", "tests", "docs"}
-    assert skipped == {}
+def test_ecosystem_detection():
+    assert snap.ecosystem_for("package.json") == "npm"
+    assert snap.ecosystem_for("requirements.txt") == "pypi"
+    assert snap.ecosystem_for("composer.json") == "packagist"
+    assert snap.ecosystem_for("Cargo.toml") == "crates"
+    assert snap.ecosystem_for("Gemfile") == "rubygems"
+    assert snap.ecosystem_for("src/main.py") is None
 
 
 def test_snapshot_end_to_end(git_repo):
     (git_repo / "src" / "auth.py").write_text(
         "def login(user, password):\n    return 'SELECT * FROM users'\n")
+    (git_repo / "package.json").write_text('{\n  "dependencies": {\n    "left-pad": "^1.0.0"\n  }\n}\n')
     git(git_repo, "add", "-A")
 
     result = run_script("diff_snapshot", "--staged", cwd=git_repo)
     assert result.returncode == 0
     manifest = json.loads(result.stdout)
 
-    assert manifest["totals"]["files"] == 1
+    assert manifest["totals"]["files"] == 2
     assert (git_repo / ".swiss-cheese" / "runs" / "latest" / "diff.patch").exists()
     saved = json.loads((git_repo / ".swiss-cheese" / "runs" / "latest" / "manifest.json").read_text())
     assert saved["totals"] == manifest["totals"]
 
-    recommended = {r["agent"] for r in manifest["recommended_reviews"]}
-    assert "security" in recommended  # auth path + password/SELECT in added lines
-    assert "tests" in recommended    # code without test changes
-    # every skip carries a reason
-    assert all(s["reason"] for s in manifest["skipped_reviews"])
+    # dependency manifest detected with ecosystem
+    ecos = {d["ecosystem"] for d in manifest["dependency_manifests"]}
+    assert "npm" in ecos
+    # content flags surfaced for the selector (SELECT ... FROM in added lines)
+    assert manifest["flags"]["risky_lines"]
+    # no agent selection here anymore — that's select_agents.py's job
+    assert "recommended_reviews" not in manifest
+    assert manifest["redacted_diff_path"] is None
+
+
+def test_categories_include_security_and_deps(git_repo):
+    (git_repo / "src" / "auth.py").write_text("def f():\n    return 1\n")
+    git(git_repo, "add", "-A")
+    manifest = json.loads(run_script("diff_snapshot", "--staged", cwd=git_repo).stdout)
+    cats = {tuple(f["categories"]) for f in manifest["files"]}
+    assert any("security" in c for c in cats)
 
 
 def test_snapshot_empty_diff(git_repo):

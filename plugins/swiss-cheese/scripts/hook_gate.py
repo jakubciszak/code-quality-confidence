@@ -3,11 +3,11 @@
 
 Registered by the plugin as a PostToolUse hook on Write|Edit. It is a silent
 no-op unless the current project has opted in via .swiss-cheese/config.json
-with a layer like:
+with an agent-hooks layer (config v2 — layers keyed by id):
 
-    {"id": "agent-hooks", "type": "hook", "enabled": true,
-     "on_edit": {".py": "ruff check --quiet {file}",
-                 ".ts": "npx tsc --noEmit {file}"}}
+    "agent-hooks": {"mode": "auto",
+                    "on_edit": {".py": "ruff check --quiet {file}",
+                                ".ts": "npx tsc --noEmit {file}"}}
 
 On check failure it exits with code 2 and prints the (truncated) tool output
 to stderr, which Claude Code feeds back to the agent — the defect is caught
@@ -15,11 +15,14 @@ seconds after the edit, not at review time. Internal errors never block the
 session (exit 0): the layer has holes by design; other layers cover them.
 """
 
-import json
 import os
+import json
 import shlex
 import subprocess
 import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from sc_common import load_config  # noqa: E402
 
 
 def main():
@@ -34,13 +37,12 @@ def main():
         sys.exit(0)
 
     try:
-        cfg = json.load(open(cfg_path, encoding="utf-8"))
+        cfg = load_config(cfg_path)  # normalizes v1 + v2 to layers-by-id
     except Exception:
         sys.exit(0)
 
-    layer = next((l for l in cfg.get("layers", [])
-                  if l.get("id") == "agent-hooks" and l.get("enabled", True)), None)
-    if not layer or not isinstance(layer.get("on_edit"), dict):
+    layer = cfg["layers"].get("agent-hooks")
+    if not layer or layer.get("mode") == "skip" or not isinstance(layer.get("on_edit"), dict):
         sys.exit(0)
 
     file_path = (payload.get("tool_input") or {}).get("file_path", "")
