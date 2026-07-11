@@ -1,6 +1,6 @@
 ---
 name: init
-description: Analyze this repo and initialize Swiss Cheese defense layers — config v2, runner detection, high-risk paths, CLAUDE.md guardrails, permissions stanza. Invoke to set up the plugin in a project.
+description: Analyze this repo and initialize Swiss Cheese defense layers — config, runner detection, high-risk paths, CLAUDE.md guardrails, permissions stanza. Invoke to set up the plugin in a project.
 disable-model-invocation: true
 ---
 
