@@ -17,7 +17,7 @@ Each quality gate is a slice of cheese with holes. Defects ship only when holes 
 Then in your project:
 
 ```
-/swiss-cheese:init          # probe repo + detect runners, choose layers, write config v2
+/swiss-cheese:init          # probe repo + detect runners, choose layers, write the config
 /swiss-cheese:intent        # reconstruct a ticket into a contract before coding
 /swiss-cheese:review        # layered multi-lens review of your current diff
 /swiss-cheese:loop <task>   # work autonomously, passing every layer in a loop
@@ -60,7 +60,7 @@ Lenses (`review-core`, `-security`, `-tests`, `-performance`, `-architecture`, `
 
 Every finding carries a fifth field, **`verification`**: the test/assertion/lint rule that would catch it (or `manual: <why>`) — operationalizing "don't ask the model to verify; ask it to write a script that verifies."
 
-## Config v2
+## Configuration
 
 `.swiss-cheese/config.json`: `layers` is an object keyed by id, each with `mode: auto | comment | skip`. Global gating is `block_at` / `warn_at` on the `blocker | high | medium | low` scale. `check_layers.py` reports every layer as **passed | failed | skipped** — a missing binary is `skipped`, never a silent pass — and computes `ok` **only from `auto` layers that `failed`**. A v1 config still runs (defaults + a one-line nudge to re-init).
 
@@ -79,7 +79,7 @@ Lenses ship with `memory: project` (committed under `.claude/agent-memory/`, sha
 
 ```
 .swiss-cheese/
-  config.json          # the defense stack, schema v2 (see templates/config.sample.json)
+  config.json          # the defense stack (see templates/config.sample.json)
   runners.json         # detected run commands per task
   knowledge.json       # task/domain knowledge sources
   runs/latest/         # diff.patch + diff.redacted.patch + manifest.json + guards.json

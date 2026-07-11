@@ -45,7 +45,7 @@ Native **skills** (not legacy `commands/`). Consciously-invoked ones set `disabl
 
 | Skill | What it does |
 |---|---|
-| `/swiss-cheese:init` | Probes the repo (`repo_probe.py`) and **detects how to run tools** (`runner_detector.py`: Makefile → package.json → composer → pyproject → justfile → Taskfile → docker-compose → binaries), proposes `high_risk_paths` and a `permissions.deny` stanza, writes config v2. Never edits `.claude/settings.json` itself. |
+| `/swiss-cheese:init` | Probes the repo (`repo_probe.py`) and **detects how to run tools** (`runner_detector.py`: Makefile → package.json → composer → pyproject → justfile → Taskfile → docker-compose → binaries), proposes `high_risk_paths` and a `permissions.deny` stanza, writes the config. Never edits `.claude/settings.json` itself. |
 | `/swiss-cheese:intent` | Reconstructs a ticket into intent, acceptance criteria, test plan, scope guards, risk class, and an `AI-disclosure` block — then stops, writing no code (Haiku). |
 | `/swiss-cheese:review` | `diff_snapshot` → deterministic **guards** → `select_agents` (an unremovable lens floor) → independent read-only lens subagents on the **redacted** diff, in parallel → one ranked report. |
 | `/swiss-cheese:loop <task>` | Implement → `check_layers.py --fast` → guards → review → fix → repeat until green or the iteration budget runs out. |
@@ -59,7 +59,7 @@ Two further skills are **model-invoked domain knowledge** rather than slash comm
 
 **A deterministic review-lens floor.** `select_agents.py` returns `required` (unremovable, rule-computed, never empty for a real diff) separately from `escalation_allowed` (whether the model may *add* lenses). The boundary lives in the data structure, not in a "please don't remove" prompt. Read-only lenses (core/security/tests/performance/architecture/docs/staff) run in parallel; high-risk paths escalate architecture/staff to Opus; every finding carries a `verification` field.
 
-**Config v2 & fail-closed audit.** `layers` keyed by id with `mode: auto | comment | skip`; `ok` counts only `auto` layers that `failed`; a missing binary is `skipped`, never a silent pass. The audit log's system backbone is hook-written; interpretive entries are model-written and fail-closed — a finding stays active until a `finding_dismissed` line exists.
+**Layered config & fail-closed audit.** `layers` keyed by id with `mode: auto | comment | skip`; `ok` counts only `auto` layers that `failed`; a missing binary is `skipped`, never a silent pass. The audit log's system backbone is hook-written; interpretive entries are model-written and fail-closed — a finding stays active until a `finding_dismissed` line exists.
 
 **Agents remember your project.** Read-only lenses carry `memory: project` (committed under `.claude/agent-memory/`) with a revalidation protocol (`UPDATE`/`STALE`/`RESOLVED`) and three hard write triggers — so each run is sharper than the last.
 
@@ -85,7 +85,7 @@ plugins/
     agents/                          # read-only subagents: lens set (review-*), intent-agent, pair-agent, repo-analyst
     scripts/                         # stdlib-only Python: config, guards/, diff, select, runners, audit
     references/                      # layer catalog, injection patterns, popular-packages list (load on demand)
-    templates/                       # config v2 sample, ADR, checklist, pre-commit config, CLAUDE.md governance
+    templates/                       # config sample, ADR, checklist, pre-commit config, CLAUDE.md governance
     hooks/hooks.json                 # PreToolUse guards + commit gate; PostToolUse agent-hooks + audit
     MEMORY.md                        # agent-memory index & protocol
 ```

@@ -394,7 +394,7 @@
 
     <article class="card reveal">
       <div class="ico">▦</div>
-      <h3 data-i18n="feat4.h">Config v2 &amp; fail-closed audit</h3>
+      <h3 data-i18n="feat4.h">Layered config &amp; fail-closed audit</h3>
       <p data-i18n="feat4.p">Layers keyed by id with <code>auto</code> / <code>comment</code> / <code>skip</code> modes. A missing binary is <code>skipped</code>, never a silent pass. Findings stay active in the audit log until an explicit <code>finding_dismissed</code> line exists.</p>
     </article>
 
@@ -421,7 +421,7 @@
   </div>
 
   <div class="skills">
-    <div class="skill reveal"><div class="cmd">/swiss-cheese:init</div><div class="desc" data-i18n="skill.init">Probes the repo, detects how to run your tools (Makefile → package.json → composer → pyproject → …), proposes high-risk paths and a <code style="font-family:var(--mono);color:var(--accent)">permissions.deny</code> stanza, and writes config v2 — without ever editing your settings itself.</div></div>
+    <div class="skill reveal"><div class="cmd">/swiss-cheese:init</div><div class="desc" data-i18n="skill.init">Probes the repo, detects how to run your tools (Makefile → package.json → composer → pyproject → …), proposes high-risk paths and a <code style="font-family:var(--mono);color:var(--accent)">permissions.deny</code> stanza, and writes your config — without ever editing your settings itself.</div></div>
     <div class="skill reveal"><div class="cmd">/swiss-cheese:intent</div><div class="desc" data-i18n="skill.intent">Reconstructs a ticket into intent, acceptance criteria, a test plan, scope guards, a risk class and an AI-disclosure block — then stops, writing no code. (Haiku.)</div></div>
     <div class="skill reveal"><div class="cmd">/swiss-cheese:review</div><div class="desc" data-i18n="skill.review">diff snapshot → deterministic guards → lens selection (the unremovable floor) → independent read-only lenses on the redacted diff, in parallel → one ranked report.</div></div>
     <div class="skill reveal"><div class="cmd">/swiss-cheese:loop &lt;task&gt;</div><div class="desc" data-i18n="skill.loop">Implement → check layers → guards → review → fix → repeat, until green or the iteration budget runs out.</div></div>
@@ -520,7 +520,7 @@ human-review  <span class="y">🟡 comment</span>   fatigue, rubber-stamping
       <div class="body">
         <span class="cmd-tag">/swiss-cheese:init</span>
         <h3 data-i18n="step1.h">Set up the stack once</h3>
-        <p data-i18n="step1.p">Two probes — <code>repo_probe.py</code> and <code>runner_detector.py</code> — read your languages, manifests and CI, then detect exactly how to run each tool (Makefile → package.json → pyproject → binaries). One round of questions, and it writes <code>.swiss-cheese/config.json</code> (schema v2). It never touches <code>.claude/settings.json</code> itself.</p>
+        <p data-i18n="step1.p">Two probes — <code>repo_probe.py</code> and <code>runner_detector.py</code> — read your languages, manifests and CI, then detect exactly how to run each tool (Makefile → package.json → pyproject → binaries). One round of questions, and it writes <code>.swiss-cheese/config.json</code>. It never touches <code>.claude/settings.json</code> itself.</p>
         <div class="term">
           <div class="term-bar"><div class="dots"><i></i><i></i><i></i></div><span class="lbl">/swiss-cheese:init</span></div>
 <pre class="term-body"><span class="d">probing repo…</span>
@@ -679,7 +679,7 @@ git clone https://github.com/jakubciszak/code-quality-confidence.git
   </div>
 
   <p class="foot-note" style="text-align:center;margin-top:28px" data-i18n="install.note">
-    Then run <code style="font-family:var(--mono);color:var(--accent)">/swiss-cheese:init</code> to detect your toolchain and write config v2.
+    Then run <code style="font-family:var(--mono);color:var(--accent)">/swiss-cheese:init</code> to detect your toolchain and write your config.
   </p>
 </section>
 
@@ -799,7 +799,7 @@ git clone https://github.com/jakubciszak/code-quality-confidence.git
     'feat2.p': '<code>select_agents.py</code> zwraca wyliczony regułami zbiór <code>required</code>, oddzielony od <code>escalation_allowed</code>. Ta granica jest zapisana w strukturze danych, a nie w promptcie „proszę, nie usuwaj”. Dla prawdziwego diffu nigdy nie bywa pusta.',
     'feat3.h': 'Niezależne, równoległe perspektywy',
     'feat3.p': 'Subagenci tylko do odczytu — core, security, tests, performance, architecture, docs, staff — przeglądają <em>zamaskowany</em> diff równolegle. Przy ścieżkach wysokiego ryzyka architecture i staff wskakują na Opusa. Każde ustalenie ma pole <code>verification</code>.',
-    'feat4.h': 'Config v2 i audyt, który w razie wątpliwości blokuje',
+    'feat4.h': 'Konfiguracja warstw i audyt, który w razie wątpliwości blokuje',
     'feat4.p': 'Warstwy rozpoznawane po id, w trybach <code>auto</code> / <code>comment</code> / <code>skip</code>. Brakujący plik binarny dostaje status <code>skipped</code> — nigdy nie przechodzi po cichu. Ustalenie zostaje aktywne w logu audytu, dopóki nie pojawi się jawna linia <code>finding_dismissed</code>.',
     'feat5.h': 'Agenci pamiętają Twój projekt',
     'feat5.p': 'Każda perspektywa ma <code>memory: project</code>, zapisywane w repo pod <code>.claude/agent-memory/</code>, z protokołem rewalidacji <code>UPDATE</code> / <code>STALE</code> / <code>RESOLVED</code> — dlatego każdy kolejny przebieg jest celniejszy od poprzedniego.',
@@ -809,7 +809,7 @@ git clone https://github.com/jakubciszak/code-quality-confidence.git
     'skills.eyebrow': 'Cały stos',
     'skills.h2': 'Natywne umiejętności zamiast przestarzałych komend',
     'skills.lead': 'Świadomie wywoływane komendy slash oraz wiedza dziedzinowa, po którą model sięga sam — i która nic nie kosztuje, dopóki nie trafi się pasujące zadanie.',
-    'skill.init': 'Bada repozytorium, rozpoznaje, jak uruchamiać Twoje narzędzia (Makefile → package.json → composer → pyproject → …), proponuje ścieżki wysokiego ryzyka oraz sekcję <code style="font-family:var(--mono);color:var(--accent)">permissions.deny</code> i zapisuje config v2 — nie ruszając przy tym samodzielnie Twoich ustawień.',
+    'skill.init': 'Bada repozytorium, rozpoznaje, jak uruchamiać Twoje narzędzia (Makefile → package.json → composer → pyproject → …), proponuje ścieżki wysokiego ryzyka oraz sekcję <code style="font-family:var(--mono);color:var(--accent)">permissions.deny</code> i zapisuje Twoją konfigurację — nie ruszając przy tym samodzielnie Twoich ustawień.',
     'skill.intent': 'Przekłada zgłoszenie na intencję, kryteria akceptacji, plan testów, strażników zakresu, klasę ryzyka i blok AI-disclosure — po czym się zatrzymuje, nie pisząc ani linijki kodu. (Haiku.)',
     'skill.review': 'migawka diffu → deterministyczni strażnicy → dobór perspektyw (nieusuwalny fundament) → niezależne perspektywy tylko do odczytu na zamaskowanym diffie, równolegle → jeden uszeregowany raport.',
     'skill.loop': 'Implementuj → sprawdź warstwy → strażnicy → przegląd → popraw — i tak w kółko, aż będzie zielono albo skończy się budżet iteracji.',
@@ -831,7 +831,7 @@ git clone https://github.com/jakubciszak/code-quality-confidence.git
     'walk.h2': 'Prawdziwa zmiana, od początku do końca',
     'walk.lead': 'Wypuść jeden uwierzytelniony endpoint — <code>GET /api/export</code>, dotykający ścieżki wysokiego ryzyka <code>auth/</code> — z każdym plastrem na miejscu. Oto cały przebieg, od pustego repo aż po merge, któremu ufasz.',
     'step1.h': 'Skonfiguruj stos raz a dobrze',
-    'step1.p': 'Dwie sondy — <code>repo_probe.py</code> i <code>runner_detector.py</code> — czytają Twoje języki, manifesty i CI, a potem dokładnie rozpoznają, jak uruchomić każde narzędzie (Makefile → package.json → pyproject → pliki binarne). Jedna runda pytań i gotowe: zapisują <code>.swiss-cheese/config.json</code> (schemat v2). Samego <code>.claude/settings.json</code> nigdy nie ruszają.',
+    'step1.p': 'Dwie sondy — <code>repo_probe.py</code> i <code>runner_detector.py</code> — czytają Twoje języki, manifesty i CI, a potem dokładnie rozpoznają, jak uruchomić każde narzędzie (Makefile → package.json → pyproject → pliki binarne). Jedna runda pytań i gotowe: zapisują <code>.swiss-cheese/config.json</code>. Samego <code>.claude/settings.json</code> nigdy nie ruszają.',
     'step2.h': 'Zamień zgłoszenie w kontrakt — zanim powstanie kod',
     'step2.p': 'Subagent na Haiku, tylko do odczytu, przekłada zgłoszenie na intencję, kryteria akceptacji, plan testów, strażników zakresu, klasę ryzyka i gotowy do wklejenia blok <code>AI-disclosure</code> (który później zadowala strażnika <code>policy</code>). Nie pisze kodu i się zatrzymuje.',
     'step3.h': 'Implementuj w pętli',
@@ -848,7 +848,7 @@ git clone https://github.com/jakubciszak/code-quality-confidence.git
     'install.lead': 'Dodaj marketplace, zainstaluj wtyczkę. Jeśli Twoje środowisko nie potrafi pobierać marketplace\'ów prosto z GitHuba, najpierw sklonuj repo i wskaż lokalną ścieżkę.',
     'install.num1': '01 — z GitHuba',
     'install.num2': '02 — z lokalnego klona',
-    'install.note': 'Potem uruchom <code style="font-family:var(--mono);color:var(--accent)">/swiss-cheese:init</code>, żeby wykryć Twój toolchain i zapisać config v2.',
+    'install.note': 'Potem uruchom <code style="font-family:var(--mono);color:var(--accent)">/swiss-cheese:init</code>, żeby wykryć Twój toolchain i zapisać konfigurację.',
     'copy': 'kopiuj',
     // final
     'final.eyebrow': 'Otwarte źródła · MIT',
