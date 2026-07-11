@@ -96,7 +96,15 @@
   .nav-cta{font-family:var(--mono);font-size:.82rem;font-weight:500;color:var(--accent);
     border:1px solid var(--accent)66;border-radius:99px;padding:8px 16px;transition:.2s;display:inline-flex;align-items:center;gap:7px}
   .nav-cta:hover{background:var(--accent)1a;border-color:var(--accent);box-shadow:0 0 22px #00ff8233}
-  @media(max-width:760px){.nav-links a:not(.nav-cta){display:none}}
+  /* ---------- language switch ---------- */
+  .lang-switch{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:99px;
+    overflow:hidden;font-family:var(--mono);font-size:.76rem;font-weight:500;background:var(--glass);flex:none}
+  .lang-switch button{background:transparent;border:0;color:var(--text-dim);padding:6px 11px;cursor:pointer;
+    font:inherit;line-height:1;transition:color .2s,background .2s}
+  .lang-switch button:hover{color:var(--text)}
+  .lang-switch button.active{background:#00ff821a;color:var(--accent)}
+  .lang-switch button+button{border-left:1px solid var(--line)}
+  @media(max-width:760px){.nav-links a:not(.nav-cta):not(.lang-switch button){display:none}}
 
   /* ---------- hero ---------- */
   .hero{padding-top:clamp(120px,18vh,190px);padding-bottom:clamp(48px,8vw,90px);text-align:center}
@@ -281,10 +289,14 @@
       swiss-cheese
     </a>
     <nav class="nav-links">
-      <a href="#how">How it works</a>
-      <a href="#skills">Skills</a>
-      <a href="#walkthrough">Example</a>
-      <a href="#install">Install</a>
+      <a href="#how" data-i18n="nav.how">How it works</a>
+      <a href="#skills" data-i18n="nav.skills">Skills</a>
+      <a href="#walkthrough" data-i18n="nav.example">Example</a>
+      <a href="#install" data-i18n="nav.install">Install</a>
+      <div class="lang-switch" role="group" aria-label="Language / Język">
+        <button type="button" data-set-lang="en" aria-label="English">EN</button>
+        <button type="button" data-set-lang="pl" aria-label="Polski">PL</button>
+      </div>
       <a class="nav-cta" href="https://github.com/jakubciszak/code-quality-confidence" target="_blank" rel="noopener">
         <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38v-1.34c-2.23.49-2.7-1.07-2.7-1.07-.36-.93-.89-1.18-.89-1.18-.73-.5.05-.49.05-.49.81.06 1.23.83 1.23.83.72 1.23 1.88.87 2.34.67.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.83-2.15-.08-.2-.36-1.01.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.11.16 1.92.08 2.12.52.56.83 1.28.83 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.19c0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
         GitHub
@@ -298,49 +310,49 @@
 
 <!-- HERO -->
 <section class="hero wrap">
-  <div class="badge"><span class="dot"></span> Claude Code plugin marketplace · <span id="version">v0.3.0</span></div>
-  <h1>Ship fewer defects with <span class="grad">layered defense</span></h1>
-  <p class="lead">Every quality gate — linting, tests, hooks, AI review, human review — is a slice of Swiss cheese: useful, but full of holes. <strong style="color:var(--text-soft);font-weight:500">swiss-cheese</strong> stacks those slices for Claude Code, cheaply, so a defect only ships when the holes in <em>every</em> slice line up.</p>
+  <div class="badge"><span class="dot"></span> <span data-i18n="hero.badge">Claude Code plugin marketplace ·</span> <span id="version">v0.3.0</span></div>
+  <h1 data-i18n="hero.h1">Ship fewer defects with <span class="grad">layered defense</span></h1>
+  <p class="lead" data-i18n="hero.lead">Every quality gate — linting, tests, hooks, AI review, human review — is a slice of Swiss cheese: useful, but full of holes. <strong style="color:var(--text-soft);font-weight:500">swiss-cheese</strong> stacks those slices for Claude Code, cheaply, so a defect only ships when the holes in <em>every</em> slice line up.</p>
 
-  <blockquote class="quote">You don't need perfect defenses. You need enough imperfect ones that <span>the holes never align.</span></blockquote>
+  <blockquote class="quote" data-i18n="hero.quote">You don't need perfect defenses. You need enough imperfect ones that <span>the holes never align.</span></blockquote>
 
   <div class="cta-row">
     <a class="btn btn-primary" href="#install">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M8 1v9m0 0 3.2-3.2M8 10 4.8 6.8M2 12v1.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V12"/></svg>
-      Install the plugin
+      <span data-i18n="hero.btnInstall">Install the plugin</span>
     </a>
     <a class="btn btn-ghost" href="https://github.com/jakubciszak/code-quality-confidence" target="_blank" rel="noopener">
-      Read the docs
+      <span data-i18n="hero.btnDocs">Read the docs</span>
       <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 3h7v7M13 3 3 13"/></svg>
     </a>
   </div>
 
   <div class="hero-stats">
-    <span><b>5</b> stdlib-only guards</span>
-    <span><b>7</b> review lenses</span>
-    <span><b>0</b> tokens at the commit gate</span>
-    <span><b>MIT</b> licensed</span>
+    <span data-i18n="hero.stat1"><b>5</b> stdlib-only guards</span>
+    <span data-i18n="hero.stat2"><b>7</b> review lenses</span>
+    <span data-i18n="hero.stat3"><b>0</b> tokens at the commit gate</span>
+    <span data-i18n="hero.stat4"><b>MIT</b> licensed</span>
   </div>
 
   <!-- PIPELINE -->
   <div class="pipeline reveal">
-    <div class="pipe-label">A defect crosses every slice — or it doesn't cross at all</div>
+    <div class="pipe-label" data-i18n="pipe.label">A defect crosses every slice — or it doesn't cross at all</div>
     <div class="slices">
-      <div class="slice"><span class="hole a"></span><span class="hole b"></span><span class="hole c"></span><span class="name">instructions</span></div>
+      <div class="slice"><span class="hole a"></span><span class="hole b"></span><span class="hole c"></span><span class="name" data-i18n="pipe.instructions">instructions</span></div>
       <span class="arrow">→</span>
       <div class="slice"><span class="hole a"></span><span class="hole c"></span><span class="name">lint</span></div>
       <span class="arrow">→</span>
-      <div class="slice"><span class="hole b"></span><span class="hole c"></span><span class="name">hooks</span></div>
+      <div class="slice"><span class="hole b"></span><span class="hole c"></span><span class="name" data-i18n="pipe.hooks">hooks</span></div>
       <span class="arrow">→</span>
-      <div class="slice"><span class="hole a"></span><span class="hole b"></span><span class="name">tests</span></div>
+      <div class="slice"><span class="hole a"></span><span class="hole b"></span><span class="name" data-i18n="pipe.tests">tests</span></div>
       <span class="arrow">→</span>
-      <div class="slice"><span class="hole a"></span><span class="hole c"></span><span class="name">agent review</span></div>
+      <div class="slice"><span class="hole a"></span><span class="hole c"></span><span class="name" data-i18n="pipe.review">agent review</span></div>
       <span class="arrow">→</span>
-      <div class="slice"><span class="hole b"></span><span class="name">human</span></div>
+      <div class="slice"><span class="hole b"></span><span class="name" data-i18n="pipe.human">human</span></div>
       <span class="arrow">→</span>
       <span class="stopped">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 8h12M11 5l3 3-3 3"/></svg>
-        stopped
+        <span data-i18n="pipe.stopped">stopped</span>
       </span>
     </div>
   </div>
@@ -349,46 +361,46 @@
 <!-- HOW IT WORKS -->
 <section id="how" class="wrap">
   <div class="sec-head reveal">
-    <span class="eyebrow">How it works</span>
-    <h2>Defense-in-depth, engineered into the data structure</h2>
-    <p class="lead">Not a prompt that asks Claude to be careful — deterministic mechanisms that fail closed, run before the LLM, and get sharper every session.</p>
+    <span class="eyebrow" data-i18n="how.eyebrow">How it works</span>
+    <h2 data-i18n="how.h2">Defense-in-depth, engineered into the data structure</h2>
+    <p class="lead" data-i18n="how.lead">Not a prompt that asks Claude to be careful — deterministic mechanisms that fail closed, run before the LLM, and get sharper every session.</p>
   </div>
 
   <div class="features">
     <article class="card reveal">
       <div class="ico">▤</div>
-      <h3>Deterministic pre-LLM guards</h3>
-      <p><code>run_guards.py</code> scans the diff <em>as data, never executing it</em> — injection, secrets (with redaction), policy thresholds, and slopsquat / hallucinated deps. Blockers are enforced at commit time by a <code>PreToolUse</code> hook. Zero tokens.</p>
+      <h3 data-i18n="feat1.h">Deterministic pre-LLM guards</h3>
+      <p data-i18n="feat1.p"><code>run_guards.py</code> scans the diff <em>as data, never executing it</em> — injection, secrets (with redaction), policy thresholds, and slopsquat / hallucinated deps. Blockers are enforced at commit time by a <code>PreToolUse</code> hook. Zero tokens.</p>
     </article>
 
     <article class="card reveal">
       <div class="ico">◈</div>
-      <h3>An unremovable review-lens floor</h3>
-      <p><code>select_agents.py</code> returns a rule-computed <code>required</code> set, separate from <code>escalation_allowed</code>. The boundary lives in the data structure, not in a “please don't remove” prompt. It's never empty for a real diff.</p>
+      <h3 data-i18n="feat2.h">An unremovable review-lens floor</h3>
+      <p data-i18n="feat2.p"><code>select_agents.py</code> returns a rule-computed <code>required</code> set, separate from <code>escalation_allowed</code>. The boundary lives in the data structure, not in a “please don't remove” prompt. It's never empty for a real diff.</p>
     </article>
 
     <article class="card reveal">
       <div class="ico">⊞</div>
-      <h3>Independent parallel lenses</h3>
-      <p>Read-only subagents — core, security, tests, performance, architecture, docs, staff — review the <em>redacted</em> diff in parallel. High-risk paths escalate architecture &amp; staff to Opus. Every finding carries a <code>verification</code> field.</p>
+      <h3 data-i18n="feat3.h">Independent parallel lenses</h3>
+      <p data-i18n="feat3.p">Read-only subagents — core, security, tests, performance, architecture, docs, staff — review the <em>redacted</em> diff in parallel. High-risk paths escalate architecture &amp; staff to Opus. Every finding carries a <code>verification</code> field.</p>
     </article>
 
     <article class="card reveal">
       <div class="ico">▦</div>
-      <h3>Config v2 &amp; fail-closed audit</h3>
-      <p>Layers keyed by id with <code>auto</code> / <code>comment</code> / <code>skip</code> modes. A missing binary is <code>skipped</code>, never a silent pass. Findings stay active in the audit log until an explicit <code>finding_dismissed</code> line exists.</p>
+      <h3 data-i18n="feat4.h">Config v2 &amp; fail-closed audit</h3>
+      <p data-i18n="feat4.p">Layers keyed by id with <code>auto</code> / <code>comment</code> / <code>skip</code> modes. A missing binary is <code>skipped</code>, never a silent pass. Findings stay active in the audit log until an explicit <code>finding_dismissed</code> line exists.</p>
     </article>
 
     <article class="card reveal">
       <div class="ico">◲</div>
-      <h3>Agents remember your project</h3>
-      <p>Each lens carries <code>memory: project</code>, committed under <code>.claude/agent-memory/</code>, with an <code>UPDATE</code> / <code>STALE</code> / <code>RESOLVED</code> revalidation protocol — so every run is sharper than the last.</p>
+      <h3 data-i18n="feat5.h">Agents remember your project</h3>
+      <p data-i18n="feat5.p">Each lens carries <code>memory: project</code>, committed under <code>.claude/agent-memory/</code>, with an <code>UPDATE</code> / <code>STALE</code> / <code>RESOLVED</code> revalidation protocol — so every run is sharper than the last.</p>
     </article>
 
     <article class="card reveal">
       <div class="ico">⌥</div>
-      <h3>It never kills your session</h3>
-      <p>Every internal guard error is <code>exit 0</code> — a layer may have holes, but it fails open on itself and closed on the defect. The repository eats its own cooking: two CI slices guard every PR.</p>
+      <h3 data-i18n="feat6.h">It never kills your session</h3>
+      <p data-i18n="feat6.p">Every internal guard error is <code>exit 0</code> — a layer may have holes, but it fails open on itself and closed on the defect. The repository eats its own cooking: two CI slices guard every PR.</p>
     </article>
   </div>
 </section>
@@ -396,34 +408,34 @@
 <!-- SKILLS -->
 <section id="skills" class="wrap">
   <div class="sec-head reveal">
-    <span class="eyebrow">The stack</span>
-    <h2>Native skills, not legacy commands</h2>
-    <p class="lead">Consciously-invoked slash commands plus model-invoked domain knowledge that costs nothing until a task matches it.</p>
+    <span class="eyebrow" data-i18n="skills.eyebrow">The stack</span>
+    <h2 data-i18n="skills.h2">Native skills, not legacy commands</h2>
+    <p class="lead" data-i18n="skills.lead">Consciously-invoked slash commands plus model-invoked domain knowledge that costs nothing until a task matches it.</p>
   </div>
 
   <div class="skills">
-    <div class="skill reveal"><div class="cmd">/swiss-cheese:init</div><div class="desc">Probes the repo, detects how to run your tools (Makefile → package.json → composer → pyproject → …), proposes high-risk paths and a <code style="font-family:var(--mono);color:var(--accent)">permissions.deny</code> stanza, and writes config v2 — without ever editing your settings itself.</div></div>
-    <div class="skill reveal"><div class="cmd">/swiss-cheese:intent</div><div class="desc">Reconstructs a ticket into intent, acceptance criteria, a test plan, scope guards, a risk class and an AI-disclosure block — then stops, writing no code. (Haiku.)</div></div>
-    <div class="skill reveal"><div class="cmd">/swiss-cheese:review</div><div class="desc">diff snapshot → deterministic guards → lens selection (the unremovable floor) → independent read-only lenses on the redacted diff, in parallel → one ranked report.</div></div>
-    <div class="skill reveal"><div class="cmd">/swiss-cheese:loop &lt;task&gt;</div><div class="desc">Implement → check layers → guards → review → fix → repeat, until green or the iteration budget runs out.</div></div>
-    <div class="skill reveal"><div class="cmd">/swiss-cheese:pair</div><div class="desc">A numbered list of hard, break-it questions on your change. Sonnet, read-only — it can't write code.</div></div>
-    <div class="skill reveal"><div class="cmd">/swiss-cheese:custom-layer</div><div class="desc">A five-step methodology for building a defense layer the catalog doesn't cover — name the failure mode, pick the cheapest mechanism, implement, analyze the new holes, test.</div></div>
-    <div class="skill reveal"><div class="cmd">:layer · :status<br>:knowledge · :audit</div><div class="desc">Manage the stack, render it, wire task sources, and grade the knowledge layers.</div></div>
+    <div class="skill reveal"><div class="cmd">/swiss-cheese:init</div><div class="desc" data-i18n="skill.init">Probes the repo, detects how to run your tools (Makefile → package.json → composer → pyproject → …), proposes high-risk paths and a <code style="font-family:var(--mono);color:var(--accent)">permissions.deny</code> stanza, and writes config v2 — without ever editing your settings itself.</div></div>
+    <div class="skill reveal"><div class="cmd">/swiss-cheese:intent</div><div class="desc" data-i18n="skill.intent">Reconstructs a ticket into intent, acceptance criteria, a test plan, scope guards, a risk class and an AI-disclosure block — then stops, writing no code. (Haiku.)</div></div>
+    <div class="skill reveal"><div class="cmd">/swiss-cheese:review</div><div class="desc" data-i18n="skill.review">diff snapshot → deterministic guards → lens selection (the unremovable floor) → independent read-only lenses on the redacted diff, in parallel → one ranked report.</div></div>
+    <div class="skill reveal"><div class="cmd">/swiss-cheese:loop &lt;task&gt;</div><div class="desc" data-i18n="skill.loop">Implement → check layers → guards → review → fix → repeat, until green or the iteration budget runs out.</div></div>
+    <div class="skill reveal"><div class="cmd">/swiss-cheese:pair</div><div class="desc" data-i18n="skill.pair">A numbered list of hard, break-it questions on your change. Sonnet, read-only — it can't write code.</div></div>
+    <div class="skill reveal"><div class="cmd">/swiss-cheese:custom-layer</div><div class="desc" data-i18n="skill.custom">A five-step methodology for building a defense layer the catalog doesn't cover — name the failure mode, pick the cheapest mechanism, implement, analyze the new holes, test.</div></div>
+    <div class="skill reveal"><div class="cmd">:layer · :status<br>:knowledge · :audit</div><div class="desc" data-i18n="skill.manage">Manage the stack, render it, wire task sources, and grade the knowledge layers.</div></div>
   </div>
 </section>
 
 <!-- IN THE TERMINAL -->
 <section id="terminal" class="wrap">
   <div class="sec-head reveal">
-    <span class="eyebrow">Concrete examples</span>
-    <h2>What each slice actually shows you</h2>
-    <p class="lead">Every layer prints something you can act on — a rendered stack, a zero-token commit block, a ranked review. These are the real outputs, not mockups of a happy path.</p>
+    <span class="eyebrow" data-i18n="term.eyebrow">Concrete examples</span>
+    <h2 data-i18n="term.h2">What each slice actually shows you</h2>
+    <p class="lead" data-i18n="term.lead">Every layer prints something you can act on — a rendered stack, a zero-token commit block, a ranked review. These are the real outputs, not mockups of a happy path.</p>
   </div>
 
   <div class="term-grid">
     <article class="term-card reveal">
-      <h3>Render the stack</h3>
-      <p><code>/swiss-cheese:status</code> runs <code>layer_status.py</code> and prints your defense layers, their mode, and the <em>named holes</em> each one is blind to — plus the catalog layers you're still missing.</p>
+      <h3 data-i18n="term1.h">Render the stack</h3>
+      <p data-i18n="term1.p"><code>/swiss-cheese:status</code> runs <code>layer_status.py</code> and prints your defense layers, their mode, and the <em>named holes</em> each one is blind to — plus the catalog layers you're still missing.</p>
       <div class="term">
         <div class="term-bar"><div class="dots"><i></i><i></i><i></i></div><span class="lbl">/swiss-cheese:status</span></div>
 <pre class="term-body"><span class="w"># Swiss Cheese — defense stack</span>
@@ -445,8 +457,8 @@ human-review  <span class="y">🟡 comment</span>   fatigue, rubber-stamping
     </article>
 
     <article class="term-card reveal">
-      <h3>Block a leak at commit — 0 tokens</h3>
-      <p>A <code>PreToolUse</code> hook scans the <em>staged</em> diff as data. If a blocker lands at or above your threshold, the commit is stopped by <code>exit 2</code> — no model, no tokens.</p>
+      <h3 data-i18n="term2.h">Block a leak at commit — 0 tokens</h3>
+      <p data-i18n="term2.p">A <code>PreToolUse</code> hook scans the <em>staged</em> diff as data. If a blocker lands at or above your threshold, the commit is stopped by <code>exit 2</code> — no model, no tokens.</p>
       <div class="term">
         <div class="term-bar"><div class="dots"><i></i><i></i><i></i></div><span class="lbl">shell</span></div>
 <pre class="term-body"><span class="pr">$</span> <span class="cmd">git commit -m "add S3 uploader"</span>
@@ -464,8 +476,8 @@ human-review  <span class="y">🟡 comment</span>   fatigue, rubber-stamping
     </article>
 
     <article class="term-card reveal">
-      <h3>Layered review, ranked</h3>
-      <p>Independent read-only lenses review the <em>redacted</em> diff in parallel. The required floor is rule-computed; high-risk paths add <code>staff</code> and escalate it to Opus. Every finding carries a <code>verification</code>.</p>
+      <h3 data-i18n="term3.h">Layered review, ranked</h3>
+      <p data-i18n="term3.p">Independent read-only lenses review the <em>redacted</em> diff in parallel. The required floor is rule-computed; high-risk paths add <code>staff</code> and escalate it to Opus. Every finding carries a <code>verification</code>.</p>
       <div class="term">
         <div class="term-bar"><div class="dots"><i></i><i></i><i></i></div><span class="lbl">/swiss-cheese:review</span></div>
 <pre class="term-body"><span class="d">snapshot</span>  3 files, <span class="g">+120</span> <span class="r">−8</span>   guards <span class="g">✓</span> <span class="d">(1 secret redacted)</span>
@@ -490,9 +502,9 @@ human-review  <span class="y">🟡 comment</span>   fatigue, rubber-stamping
 <!-- WALKTHROUGH -->
 <section id="walkthrough" class="wrap">
   <div class="sec-head reveal">
-    <span class="eyebrow">Step by step</span>
-    <h2>A real change, end to end</h2>
-    <p class="lead">Ship one authenticated endpoint — <code>GET /api/export</code>, touching a high-risk <code>auth/</code> path — with every slice stacked. Here's the whole run, from empty repo to a merge you trust.</p>
+    <span class="eyebrow" data-i18n="walk.eyebrow">Step by step</span>
+    <h2 data-i18n="walk.h2">A real change, end to end</h2>
+    <p class="lead" data-i18n="walk.lead">Ship one authenticated endpoint — <code>GET /api/export</code>, touching a high-risk <code>auth/</code> path — with every slice stacked. Here's the whole run, from empty repo to a merge you trust.</p>
   </div>
 
   <div class="walk">
@@ -500,8 +512,8 @@ human-review  <span class="y">🟡 comment</span>   fatigue, rubber-stamping
       <div class="n">1</div>
       <div class="body">
         <span class="cmd-tag">/swiss-cheese:init</span>
-        <h3>Set up the stack once</h3>
-        <p>Two probes — <code>repo_probe.py</code> and <code>runner_detector.py</code> — read your languages, manifests and CI, then detect exactly how to run each tool (Makefile → package.json → pyproject → binaries). One round of questions, and it writes <code>.swiss-cheese/config.json</code> (schema v2). It never touches <code>.claude/settings.json</code> itself.</p>
+        <h3 data-i18n="step1.h">Set up the stack once</h3>
+        <p data-i18n="step1.p">Two probes — <code>repo_probe.py</code> and <code>runner_detector.py</code> — read your languages, manifests and CI, then detect exactly how to run each tool (Makefile → package.json → pyproject → binaries). One round of questions, and it writes <code>.swiss-cheese/config.json</code> (schema v2). It never touches <code>.claude/settings.json</code> itself.</p>
         <div class="term">
           <div class="term-bar"><div class="dots"><i></i><i></i><i></i></div><span class="lbl">/swiss-cheese:init</span></div>
 <pre class="term-body"><span class="d">probing repo…</span>
@@ -523,8 +535,8 @@ high-risk <span class="c">src/auth/**</span>, <span class="c">src/payments/**</s
       <div class="n">2</div>
       <div class="body">
         <span class="cmd-tag">/swiss-cheese:intent</span>
-        <h3>Turn the ticket into a contract — before any code</h3>
-        <p>A Haiku, read-only subagent reconstructs the ticket into intent, acceptance criteria, a test plan, scope guards, a risk class, and a paste-ready <code>AI-disclosure</code> block (which later satisfies the <code>policy</code> guard). It writes no code and stops.</p>
+        <h3 data-i18n="step2.h">Turn the ticket into a contract — before any code</h3>
+        <p data-i18n="step2.p">A Haiku, read-only subagent reconstructs the ticket into intent, acceptance criteria, a test plan, scope guards, a risk class, and a paste-ready <code>AI-disclosure</code> block (which later satisfies the <code>policy</code> guard). It writes no code and stops.</p>
         <div class="term">
           <div class="term-bar"><div class="dots"><i></i><i></i><i></i></div><span class="lbl">/swiss-cheese:intent  JIRA-482</span></div>
 <pre class="term-body"><span class="w">Intent</span>       expose account data as CSV, authenticated users only.
@@ -544,8 +556,8 @@ high-risk <span class="c">src/auth/**</span>, <span class="c">src/payments/**</s
       <div class="n">3</div>
       <div class="body">
         <span class="cmd-tag">/swiss-cheese:loop "JIRA-482 …"</span>
-        <h3>Implement inside the loop</h3>
-        <p>Implement → run the fast scripted layers in one call (<code>check_layers.py --fast</code>) → fix what the tail shows → repeat. <code>ok</code> is computed only from <code>auto</code> layers that <em>failed</em>; a missing binary is <code>skipped</code>, never a silent pass. One honest line per iteration.</p>
+        <h3 data-i18n="step3.h">Implement inside the loop</h3>
+        <p data-i18n="step3.p">Implement → run the fast scripted layers in one call (<code>check_layers.py --fast</code>) → fix what the tail shows → repeat. <code>ok</code> is computed only from <code>auto</code> layers that <em>failed</em>; a missing binary is <code>skipped</code>, never a silent pass. One honest line per iteration.</p>
         <div class="term">
           <div class="term-bar"><div class="dots"><i></i><i></i><i></i></div><span class="lbl">/swiss-cheese:loop</span></div>
 <pre class="term-body"><span class="d">plan → implement GET /api/export + tests</span>
@@ -562,8 +574,8 @@ iter 2: lint <span class="g">✅</span> tests <span class="g">✅</span> <span c
       <div class="n">4</div>
       <div class="body">
         <span class="cmd-tag">git commit</span>
-        <h3>A guard catches the leak you didn't mean to ship</h3>
-        <p>You hardcoded a token while debugging. At <code>git commit</code>, the deterministic guard scans the staged diff, <strong style="color:var(--text-soft);font-weight:500">redacts</strong> the secret into <code>diff.redacted.patch</code>, and blocks — spending zero tokens. Remove it, pull it from env, commit again.</p>
+        <h3 data-i18n="step4.h">A guard catches the leak you didn't mean to ship</h3>
+        <p data-i18n="step4.p">You hardcoded a token while debugging. At <code>git commit</code>, the deterministic guard scans the staged diff, <strong style="color:var(--text-soft);font-weight:500">redacts</strong> the secret into <code>diff.redacted.patch</code>, and blocks — spending zero tokens. Remove it, pull it from env, commit again.</p>
         <div class="term">
           <div class="term-bar"><div class="dots"><i></i><i></i><i></i></div><span class="lbl">shell</span></div>
 <pre class="term-body"><span class="pr">$</span> <span class="cmd">git commit -m "wire up export auth"</span>
@@ -580,8 +592,8 @@ iter 2: lint <span class="g">✅</span> tests <span class="g">✅</span> <span c
       <div class="n">5</div>
       <div class="body">
         <span class="cmd-tag">/swiss-cheese:review</span>
-        <h3>The layered review escalates itself</h3>
-        <p>Because the diff touches <code>src/auth/**</code>, the deterministic selector forces the <code>staff</code> lens into the required floor and escalates <code>architecture</code> &amp; <code>staff</code> to Opus. The <code>security</code> lens finds a timing oracle a linter never could — with a concrete fix and a verification.</p>
+        <h3 data-i18n="step5.h">The layered review escalates itself</h3>
+        <p data-i18n="step5.p">Because the diff touches <code>src/auth/**</code>, the deterministic selector forces the <code>staff</code> lens into the required floor and escalates <code>architecture</code> &amp; <code>staff</code> to Opus. The <code>security</code> lens finds a timing oracle a linter never could — with a concrete fix and a verification.</p>
         <div class="term">
           <div class="term-bar"><div class="dots"><i></i><i></i><i></i></div><span class="lbl">/swiss-cheese:review</span></div>
 <pre class="term-body"><span class="d">floor</span>  core security tests <span class="w">staff</span>  <span class="d">→ staff+arch on</span> <span class="c">Opus</span>
@@ -600,8 +612,8 @@ iter 2: lint <span class="g">✅</span> tests <span class="g">✅</span> <span c
       <div class="n">6</div>
       <div class="body">
         <span class="cmd-tag">git commit · human review</span>
-        <h3>Green, with a human gate that fails closed</h3>
-        <p>Scripted layers pass, guards are clean, the AI review is empty. What's left is the <code>human-review</code> comment layer and the <code>AI-disclosure</code> block in the PR. A finding is only ever retired when a real reason is written to the fail-closed audit log — nothing gets rubber-stamped by silence.</p>
+        <h3 data-i18n="step6.h">Green, with a human gate that fails closed</h3>
+        <p data-i18n="step6.p">Scripted layers pass, guards are clean, the AI review is empty. What's left is the <code>human-review</code> comment layer and the <code>AI-disclosure</code> block in the PR. A finding is only ever retired when a real reason is written to the fail-closed audit log — nothing gets rubber-stamped by silence.</p>
         <div class="term">
           <div class="term-bar"><div class="dots"><i></i><i></i><i></i></div><span class="lbl">/swiss-cheese:status</span></div>
 <pre class="term-body">lint <span class="g">✅</span>  typecheck <span class="g">✅</span>  tests <span class="g">✅</span>  guards <span class="g">✅</span>  review <span class="g">✅</span>
@@ -619,20 +631,20 @@ iter 2: lint <span class="g">✅</span> tests <span class="g">✅</span> <span c
 <!-- INSTALL -->
 <section id="install" class="wrap">
   <div class="sec-head reveal">
-    <span class="eyebrow">Get started</span>
-    <h2>Two commands in Claude Code</h2>
-    <p class="lead">Add the marketplace, install the plugin. If your environment can't fetch marketplaces from GitHub directly, clone first and point at the local path.</p>
+    <span class="eyebrow" data-i18n="install.eyebrow">Get started</span>
+    <h2 data-i18n="install.h2">Two commands in Claude Code</h2>
+    <p class="lead" data-i18n="install.lead">Add the marketplace, install the plugin. If your environment can't fetch marketplaces from GitHub directly, clone first and point at the local path.</p>
   </div>
 
   <div class="install-grid">
     <div class="reveal">
-      <span class="step-num">01 — from GitHub</span>
+      <span class="step-num" data-i18n="install.num1">01 — from GitHub</span>
       <div class="code">
         <div class="code-bar">
           <div class="dots"><i></i><i></i><i></i></div>
           <span class="lbl">claude code</span>
           <button class="copy" data-copy="/plugin marketplace add jakubciszak/code-quality-confidence
-/plugin install swiss-cheese@code-quality-confidence">copy</button>
+/plugin install swiss-cheese@code-quality-confidence" data-i18n="copy">copy</button>
         </div>
 <pre><span class="p">/plugin</span> marketplace add <span class="k">jakubciszak/code-quality-confidence</span>
 <span class="p">/plugin</span> install <span class="k">swiss-cheese@code-quality-confidence</span></pre>
@@ -640,14 +652,14 @@ iter 2: lint <span class="g">✅</span> tests <span class="g">✅</span> <span c
     </div>
 
     <div class="reveal">
-      <span class="step-num">02 — from a local clone</span>
+      <span class="step-num" data-i18n="install.num2">02 — from a local clone</span>
       <div class="code">
         <div class="code-bar">
           <div class="dots"><i></i><i></i><i></i></div>
           <span class="lbl">shell + claude code</span>
           <button class="copy" data-copy="git clone https://github.com/jakubciszak/code-quality-confidence.git
 /plugin marketplace add /path/to/code-quality-confidence
-/plugin install swiss-cheese@code-quality-confidence">copy</button>
+/plugin install swiss-cheese@code-quality-confidence" data-i18n="copy">copy</button>
         </div>
 <pre><span class="c"># clone anywhere on disk</span>
 git clone https://github.com/jakubciszak/code-quality-confidence.git
@@ -659,7 +671,7 @@ git clone https://github.com/jakubciszak/code-quality-confidence.git
     </div>
   </div>
 
-  <p class="foot-note" style="text-align:center;margin-top:28px">
+  <p class="foot-note" style="text-align:center;margin-top:28px" data-i18n="install.note">
     Then run <code style="font-family:var(--mono);color:var(--accent)">/swiss-cheese:init</code> to detect your toolchain and write config v2.
   </p>
 </section>
@@ -667,15 +679,15 @@ git clone https://github.com/jakubciszak/code-quality-confidence.git
 <!-- FINAL CTA -->
 <section class="wrap">
   <div class="final reveal">
-    <span class="eyebrow" style="justify-content:center">Open source · MIT</span>
-    <h2>Stack the slices. Ship with confidence.</h2>
-    <p>Layered defense that fails closed, runs before the model, and remembers your codebase. Built for teams pairing with agents on real production code.</p>
+    <span class="eyebrow" style="justify-content:center" data-i18n="final.eyebrow">Open source · MIT</span>
+    <h2 data-i18n="final.h2">Stack the slices. Ship with confidence.</h2>
+    <p data-i18n="final.p">Layered defense that fails closed, runs before the model, and remembers your codebase. Built for teams pairing with agents on real production code.</p>
     <div class="cta-row">
       <a class="btn btn-primary" href="https://github.com/jakubciszak/code-quality-confidence" target="_blank" rel="noopener">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38v-1.34c-2.23.49-2.7-1.07-2.7-1.07-.36-.93-.89-1.18-.89-1.18-.73-.5.05-.49.05-.49.81.06 1.23.83 1.23.83.72 1.23 1.88.87 2.34.67.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.83-2.15-.08-.2-.36-1.01.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.11.16 1.92.08 2.12.52.56.83 1.28.83 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.19c0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
-        Star on GitHub
+        <span data-i18n="final.btnStar">Star on GitHub</span>
       </a>
-      <a class="btn btn-ghost" href="#top">Back to top ↑</a>
+      <a class="btn btn-ghost" href="#top" data-i18n="final.btnTop">Back to top ↑</a>
     </div>
   </div>
 </section>
@@ -697,11 +709,11 @@ git clone https://github.com/jakubciszak/code-quality-confidence.git
       <div class="foot-links">
         <a href="https://github.com/jakubciszak/code-quality-confidence" target="_blank" rel="noopener">GitHub</a>
         <a href="https://miedzykodem.dev" target="_blank" rel="noopener">Blog</a>
-        <a href="https://en.wikipedia.org/wiki/Swiss_cheese_model" target="_blank" rel="noopener">Swiss Cheese Model</a>
-        <a href="#install">Install</a>
+        <a href="https://en.wikipedia.org/wiki/Swiss_cheese_model" target="_blank" rel="noopener" data-i18n="foot.model">Swiss Cheese Model</a>
+        <a href="#install" data-i18n="foot.install">Install</a>
       </div>
     </div>
-    <p class="foot-note">Built around James Reason's Swiss Cheese model of layered defense · MIT License · © 2026 Jakub Ciszak</p>
+    <p class="foot-note" data-i18n="foot.note">Built around James Reason's Swiss Cheese model of layered defense · MIT License · © 2026 Jakub Ciszak</p>
   </div>
 </footer>
 
@@ -722,11 +734,156 @@ git clone https://github.com/jakubciszak/code-quality-confidence.git
     btn.addEventListener('click', async () => {
       try {
         await navigator.clipboard.writeText(btn.dataset.copy);
-        const t = btn.textContent; btn.textContent = 'copied ✓'; btn.classList.add('done');
+        const t = btn.textContent; btn.textContent = COPIED[currentLang] || 'copied ✓'; btn.classList.add('done');
         setTimeout(() => { btn.textContent = t; btn.classList.remove('done'); }, 1600);
       } catch(_) {}
     });
   });
+
+  /* ---------- i18n: English is captured from the DOM, Polish lives here ---------- */
+  const COPIED = { en: 'copied ✓', pl: 'skopiowano ✓' };
+  let currentLang = 'en';
+
+  const META = {
+    en: {
+      title: 'Swiss Cheese — Layered Defense for Agentic Coding',
+      desc: 'A Claude Code plugin marketplace built around the Swiss Cheese model of layered defense. Stack imperfect quality gates so their holes never align.'
+    },
+    pl: {
+      title: 'Swiss Cheese — Warstwowa obrona dla kodowania z agentami',
+      desc: 'Marketplace wtyczek Claude Code zbudowany wokół modelu szwajcarskiego sera — warstwowej obrony. Układaj niedoskonałe bramki jakości tak, by ich dziury nigdy się nie pokryły.'
+    }
+  };
+
+  const PL = {
+    // nav
+    'nav.how': 'Jak to działa',
+    'nav.skills': 'Umiejętności',
+    'nav.example': 'Przykład',
+    'nav.install': 'Instalacja',
+    // hero
+    'hero.badge': 'Marketplace wtyczek Claude Code ·',
+    'hero.h1': 'Wypuszczaj mniej defektów dzięki <span class="grad">warstwowej obronie</span>',
+    'hero.lead': 'Każda bramka jakości — linting, testy, hooki, przegląd AI, przegląd człowieka — to plaster szwajcarskiego sera: przydatny, ale pełen dziur. <strong style="color:var(--text-soft);font-weight:500">swiss-cheese</strong> układa te plastry dla Claude Code, tanio, więc defekt przechodzi tylko wtedy, gdy dziury w <em>każdym</em> plastrze się pokryją.',
+    'hero.quote': 'Nie potrzebujesz doskonałych zabezpieczeń. Potrzebujesz wystarczająco wielu niedoskonałych, by <span>dziury nigdy się nie pokryły.</span>',
+    'hero.btnInstall': 'Zainstaluj wtyczkę',
+    'hero.btnDocs': 'Przeczytaj dokumentację',
+    'hero.stat1': '<b>5</b> strażników tylko na stdlib',
+    'hero.stat2': '<b>7</b> soczewek przeglądu',
+    'hero.stat3': '<b>0</b> tokenów na bramce commita',
+    'hero.stat4': 'licencja <b>MIT</b>',
+    // pipeline
+    'pipe.label': 'Defekt przechodzi przez każdy plaster — albo nie przechodzi wcale',
+    'pipe.instructions': 'instrukcje',
+    'pipe.hooks': 'hooki',
+    'pipe.tests': 'testy',
+    'pipe.review': 'przegląd agenta',
+    'pipe.human': 'człowiek',
+    'pipe.stopped': 'zatrzymany',
+    // how
+    'how.eyebrow': 'Jak to działa',
+    'how.h2': 'Obrona w głąb, wbudowana w strukturę danych',
+    'how.lead': 'Nie prompt proszący Claude\'a o ostrożność — deterministyczne mechanizmy, które zawodzą w stronę bezpieczną, działają przed LLM i z każdą sesją stają się ostrzejsze.',
+    // features
+    'feat1.h': 'Deterministyczni strażnicy przed LLM',
+    'feat1.p': '<code>run_guards.py</code> skanuje diff <em>jako dane, nigdy go nie wykonując</em> — wstrzyknięcia, sekrety (z redakcją), progi polityki oraz slopsquat / halucynowane zależności. Blokery są egzekwowane w chwili commita przez hook <code>PreToolUse</code>. Zero tokenów.',
+    'feat2.h': 'Nieusuwalny fundament soczewek przeglądu',
+    'feat2.p': '<code>select_agents.py</code> zwraca wyliczony regułami zbiór <code>required</code>, oddzielony od <code>escalation_allowed</code>. Granica żyje w strukturze danych, a nie w promptcie „proszę nie usuwać”. Dla realnego diffu nigdy nie jest pusty.',
+    'feat3.h': 'Niezależne, równoległe soczewki',
+    'feat3.p': 'Subagenci tylko do odczytu — core, security, tests, performance, architecture, docs, staff — przeglądają <em>zredagowany</em> diff równolegle. Ścieżki wysokiego ryzyka eskalują architecture i staff do Opusa. Każde ustalenie niesie pole <code>verification</code>.',
+    'feat4.h': 'Config v2 i audyt zawodzący bezpiecznie',
+    'feat4.p': 'Warstwy kluczowane po id, z trybami <code>auto</code> / <code>comment</code> / <code>skip</code>. Brakujący plik binarny jest <code>skipped</code>, nigdy cichym zaliczeniem. Ustalenia pozostają aktywne w logu audytu, dopóki nie pojawi się jawna linia <code>finding_dismissed</code>.',
+    'feat5.h': 'Agenci pamiętają Twój projekt',
+    'feat5.p': 'Każda soczewka niesie <code>memory: project</code>, zapisywane w <code>.claude/agent-memory/</code>, z protokołem rewalidacji <code>UPDATE</code> / <code>STALE</code> / <code>RESOLVED</code> — więc każdy przebieg jest ostrzejszy od poprzedniego.',
+    'feat6.h': 'Nigdy nie zabija Twojej sesji',
+    'feat6.p': 'Każdy wewnętrzny błąd strażnika to <code>exit 0</code> — warstwa może mieć dziury, ale zawodzi otwarcie względem siebie, a zamknięcie względem defektu. Repozytorium je własną kuchnię: dwa plastry CI pilnują każdego PR-a.',
+    // skills
+    'skills.eyebrow': 'Stos',
+    'skills.h2': 'Natywne umiejętności, nie przestarzałe komendy',
+    'skills.lead': 'Świadomie wywoływane komendy slash oraz wiedza dziedzinowa wywoływana przez model, która nic nie kosztuje, dopóki zadanie do niej nie pasuje.',
+    'skill.init': 'Sonduje repozytorium, wykrywa jak uruchamiać Twoje narzędzia (Makefile → package.json → composer → pyproject → …), proponuje ścieżki wysokiego ryzyka i sekcję <code style="font-family:var(--mono);color:var(--accent)">permissions.deny</code> oraz zapisuje config v2 — nigdy samodzielnie nie edytując Twoich ustawień.',
+    'skill.intent': 'Rekonstruuje zgłoszenie w intencję, kryteria akceptacji, plan testów, strażników zakresu, klasę ryzyka i blok AI-disclosure — po czym się zatrzymuje, nie pisząc kodu. (Haiku.)',
+    'skill.review': 'migawka diffu → deterministyczni strażnicy → wybór soczewek (nieusuwalny fundament) → niezależne soczewki tylko do odczytu na zredagowanym diffie, równolegle → jeden uszeregowany raport.',
+    'skill.loop': 'Implementuj → sprawdź warstwy → strażnicy → przegląd → popraw → powtarzaj, aż będzie zielono albo skończy się budżet iteracji.',
+    'skill.pair': 'Numerowana lista trudnych pytań „spróbuj to złamać” do Twojej zmiany. Sonnet, tylko do odczytu — nie potrafi pisać kodu.',
+    'skill.custom': 'Pięciokrokowa metodyka budowania warstwy obrony, której nie ma w katalogu — nazwij tryb awarii, wybierz najtańszy mechanizm, zaimplementuj, przeanalizuj nowe dziury, przetestuj.',
+    'skill.manage': 'Zarządzaj stosem, renderuj go, podłącz źródła zadań i oceniaj warstwy wiedzy.',
+    // terminal
+    'term.eyebrow': 'Konkretne przykłady',
+    'term.h2': 'Co naprawdę pokazuje Ci każdy plaster',
+    'term.lead': 'Każda warstwa wypisuje coś, na czym można działać — wyrenderowany stos, blok commita bez tokenów, uszeregowany przegląd. To prawdziwe wyniki, nie makiety szczęśliwej ścieżki.',
+    'term1.h': 'Wyrenderuj stos',
+    'term1.p': '<code>/swiss-cheese:status</code> uruchamia <code>layer_status.py</code> i wypisuje Twoje warstwy obrony, ich tryb oraz <em>nazwane dziury</em>, na które każda jest ślepa — plus warstwy z katalogu, których wciąż Ci brakuje.',
+    'term2.h': 'Zablokuj wyciek na commicie — 0 tokenów',
+    'term2.p': 'Hook <code>PreToolUse</code> skanuje <em>zindeksowany</em> diff jako dane. Jeśli bloker wypadnie na Twoim progu lub powyżej, commit jest zatrzymywany przez <code>exit 2</code> — bez modelu, bez tokenów.',
+    'term3.h': 'Warstwowy przegląd, uszeregowany',
+    'term3.p': 'Niezależne soczewki tylko do odczytu przeglądają <em>zredagowany</em> diff równolegle. Wymagany fundament jest wyliczany regułami; ścieżki wysokiego ryzyka dodają <code>staff</code> i eskalują go do Opusa. Każde ustalenie niesie <code>verification</code>.',
+    // walkthrough
+    'walk.eyebrow': 'Krok po kroku',
+    'walk.h2': 'Prawdziwa zmiana, od początku do końca',
+    'walk.lead': 'Wypuść jeden uwierzytelniony endpoint — <code>GET /api/export</code>, dotykający wysokiego ryzyka ścieżki <code>auth/</code> — z każdym plastrem na miejscu. Oto cały przebieg, od pustego repo do merge\'a, któremu ufasz.',
+    'step1.h': 'Skonfiguruj stos raz',
+    'step1.p': 'Dwie sondy — <code>repo_probe.py</code> i <code>runner_detector.py</code> — czytają Twoje języki, manifesty i CI, a potem wykrywają dokładnie, jak uruchomić każde narzędzie (Makefile → package.json → pyproject → pliki binarne). Jedna runda pytań i zapisuje <code>.swiss-cheese/config.json</code> (schemat v2). Nigdy samo nie dotyka <code>.claude/settings.json</code>.',
+    'step2.h': 'Zamień zgłoszenie w kontrakt — przed jakimkolwiek kodem',
+    'step2.p': 'Subagent na Haiku, tylko do odczytu, rekonstruuje zgłoszenie w intencję, kryteria akceptacji, plan testów, strażników zakresu, klasę ryzyka i gotowy do wklejenia blok <code>AI-disclosure</code> (który później zaspokaja strażnika <code>policy</code>). Nie pisze kodu i się zatrzymuje.',
+    'step3.h': 'Implementuj wewnątrz pętli',
+    'step3.p': 'Implementuj → uruchom szybkie skryptowe warstwy jednym wywołaniem (<code>check_layers.py --fast</code>) → popraw to, co pokaże ogon → powtarzaj. <code>ok</code> jest liczone tylko z warstw <code>auto</code>, które <em>zawiodły</em>; brakujący plik binarny jest <code>skipped</code>, nigdy cichym zaliczeniem. Jedna uczciwa linia na iterację.',
+    'step4.h': 'Strażnik łapie wyciek, którego nie chciałeś wypuścić',
+    'step4.p': 'Podczas debugowania zaszyłeś token na sztywno. Przy <code>git commit</code> deterministyczny strażnik skanuje zindeksowany diff, <strong style="color:var(--text-soft);font-weight:500">redaguje</strong> sekret do <code>diff.redacted.patch</code> i blokuje — nie wydając ani jednego tokena. Usuń go, pobierz ze zmiennych środowiskowych, zacommituj ponownie.',
+    'step5.h': 'Warstwowy przegląd sam się eskaluje',
+    'step5.p': 'Ponieważ diff dotyka <code>src/auth/**</code>, deterministyczny selektor wymusza soczewkę <code>staff</code> w wymaganym fundamencie i eskaluje <code>architecture</code> oraz <code>staff</code> do Opusa. Soczewka <code>security</code> znajduje wyrocznię czasową, której linter nigdy by nie wykrył — z konkretną poprawką i weryfikacją.',
+    'step6.h': 'Zielono, z ludzką bramką, która zawodzi bezpiecznie',
+    'step6.p': 'Skryptowe warstwy przechodzą, strażnicy są czyści, przegląd AI jest pusty. Zostaje warstwa komentarza <code>human-review</code> i blok <code>AI-disclosure</code> w PR-ze. Ustalenie zostaje wycofane tylko wtedy, gdy do zawodzącego bezpiecznie logu audytu zostanie zapisany prawdziwy powód — nic nie jest przyklepywane milczeniem.',
+    // install
+    'install.eyebrow': 'Zacznij',
+    'install.h2': 'Dwie komendy w Claude Code',
+    'install.lead': 'Dodaj marketplace, zainstaluj wtyczkę. Jeśli Twoje środowisko nie może pobierać marketplace\'ów bezpośrednio z GitHuba, najpierw sklonuj i wskaż lokalną ścieżkę.',
+    'install.num1': '01 — z GitHuba',
+    'install.num2': '02 — z lokalnego klona',
+    'install.note': 'Następnie uruchom <code style="font-family:var(--mono);color:var(--accent)">/swiss-cheese:init</code>, aby wykryć Twój toolchain i zapisać config v2.',
+    'copy': 'kopiuj',
+    // final
+    'final.eyebrow': 'Otwarte źródło · MIT',
+    'final.h2': 'Ułóż plastry. Wypuszczaj z pewnością.',
+    'final.p': 'Warstwowa obrona, która zawodzi bezpiecznie, działa przed modelem i pamięta Twój kod. Zbudowana dla zespołów pracujących z agentami przy prawdziwym kodzie produkcyjnym.',
+    'final.btnStar': 'Zagwiazdkuj na GitHubie',
+    'final.btnTop': 'Powrót na górę ↑',
+    // footer
+    'foot.model': 'Model szwajcarskiego sera',
+    'foot.install': 'Instalacja',
+    'foot.note': 'Zbudowane wokół modelu szwajcarskiego sera Jamesa Reasona · Licencja MIT · © 2026 Jakub Ciszak'
+  };
+
+  const i18nNodes = document.querySelectorAll('[data-i18n]');
+  const EN = {};
+  i18nNodes.forEach(n => { EN[n.dataset.i18n] = n.innerHTML; });
+  const metaDesc = document.querySelector('meta[name="description"]');
+
+  function applyLang(lang){
+    currentLang = lang;
+    i18nNodes.forEach(n => {
+      const k = n.dataset.i18n;
+      const val = (lang === 'pl' && PL[k] != null) ? PL[k] : EN[k];
+      if (n.innerHTML !== val) n.innerHTML = val;
+    });
+    document.documentElement.lang = lang;
+    document.title = (META[lang] || META.en).title;
+    if (metaDesc) metaDesc.setAttribute('content', (META[lang] || META.en).desc);
+    document.querySelectorAll('[data-set-lang]').forEach(b =>
+      b.classList.toggle('active', b.dataset.setLang === lang));
+    try { localStorage.setItem('lang', lang); } catch(_){}
+  }
+
+  function detectLang(){
+    try { const s = localStorage.getItem('lang'); if (s === 'pl' || s === 'en') return s; } catch(_){}
+    const l = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+    return l.indexOf('pl') === 0 ? 'pl' : 'en';
+  }
+
+  document.querySelectorAll('[data-set-lang]').forEach(b =>
+    b.addEventListener('click', () => applyLang(b.dataset.setLang)));
+
+  applyLang(detectLang());
 </script>
 </body>
 </html>
