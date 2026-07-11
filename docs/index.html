@@ -93,6 +93,10 @@
   .nav-links{display:flex;align-items:center;gap:30px}
   .nav-links a{font-size:.9rem;color:var(--text-dim);transition:color .2s}
   .nav-links a:hover{color:var(--text)}
+  .nav-blog{display:inline-flex;align-items:center;gap:5px;color:var(--accent)cc!important}
+  .nav-blog svg{transition:transform .2s}
+  .nav-blog:hover{color:var(--accent)!important}
+  .nav-blog:hover svg{transform:translate(1px,-1px)}
   .nav-cta{font-family:var(--mono);font-size:.82rem;font-weight:500;color:var(--accent);
     border:1px solid var(--accent)66;border-radius:99px;padding:8px 16px;transition:.2s;display:inline-flex;align-items:center;gap:7px}
   .nav-cta:hover{background:var(--accent)1a;border-color:var(--accent);box-shadow:0 0 22px #00ff8233}
@@ -141,14 +145,14 @@
   .slices{display:flex;align-items:center;justify-content:center;gap:clamp(6px,1.4vw,14px);flex-wrap:wrap;position:relative;z-index:1}
   .slice{position:relative;width:clamp(62px,9vw,86px);height:clamp(78px,11vw,104px);border-radius:12px;
     background:linear-gradient(145deg,#00ff8214,#00ff8205);border:1px solid #00ff8233;flex:none;
-    display:flex;flex-direction:column;justify-content:flex-end;padding:8px;overflow:hidden;
+    display:flex;flex-direction:column;justify-content:flex-end;padding:8px 3px;overflow:hidden;
     transition:transform .3s,box-shadow .3s}
   .slice:hover{transform:translateY(-5px);box-shadow:0 12px 30px -10px #00ff8266;border-color:#00ff8299}
   .slice .hole{position:absolute;border-radius:50%;background:#000;box-shadow:inset 0 0 0 1px #ffffff1a}
   .slice .hole.a{width:14px;height:14px;top:16%;left:24%}
   .slice .hole.b{width:9px;height:9px;top:44%;left:56%}
   .slice .hole.c{width:11px;height:11px;top:66%;left:30%}
-  .slice .name{font-family:var(--mono);font-size:.62rem;line-height:1.2;color:var(--accent)cc;position:relative;z-index:1}
+  .slice .name{font-family:var(--mono);font-size:.62rem;line-height:1.2;color:var(--accent)cc;position:relative;z-index:1;width:100%;text-align:center;overflow-wrap:normal;word-break:normal;hyphens:none}
   .arrow{color:var(--text-faint);font-family:var(--mono);flex:none;font-size:1.1rem}
   .stopped{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.82rem;color:var(--accent);
     border:1px solid #00ff824d;background:#00ff820f;border-radius:99px;padding:8px 16px;flex:none}
@@ -297,7 +301,10 @@
       <a href="#skills" data-i18n="nav.skills">Skills</a>
       <a href="#walkthrough" data-i18n="nav.example">Example</a>
       <a href="#install" data-i18n="nav.install">Install</a>
-      <a href="https://miedzykodem.dev" target="_blank" rel="noopener" data-i18n="nav.blog">Blog</a>
+      <a class="nav-blog" href="https://miedzykodem.dev" target="_blank" rel="noopener">
+        <span data-i18n="nav.blog">Blog</span>
+        <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5"/></svg>
+      </a>
       <div class="lang-switch" role="group" aria-label="Language / Język">
         <button type="button" data-set-lang="en" aria-label="English">EN</button>
         <button type="button" data-set-lang="pl" aria-label="Polski">PL</button>
@@ -860,6 +867,23 @@ git clone https://github.com/jakubciszak/code-quality-confidence.git
   i18nNodes.forEach(n => { EN[n.dataset.i18n] = n.innerHTML; });
   const metaDesc = document.querySelector('meta[name="description"]');
 
+  // Shrink a pipeline label's font just enough that a long single word
+  // (e.g. "instructions") stays whole on one line instead of dropping a
+  // stray letter to the next row. Two-word labels wrap on their space and
+  // are left untouched.
+  const sliceNames = document.querySelectorAll('.slice .name');
+  function fitSliceLabels(){
+    sliceNames.forEach(n => {
+      n.style.fontSize = '';
+      let px = parseFloat(getComputedStyle(n).fontSize);
+      const min = 7;
+      while (n.scrollWidth > n.clientWidth && px > min){
+        px -= 0.5;
+        n.style.fontSize = px + 'px';
+      }
+    });
+  }
+
   function applyLang(lang){
     currentLang = lang;
     i18nNodes.forEach(n => {
@@ -873,7 +897,14 @@ git clone https://github.com/jakubciszak/code-quality-confidence.git
     document.querySelectorAll('[data-set-lang]').forEach(b =>
       b.classList.toggle('active', b.dataset.setLang === lang));
     try { localStorage.setItem('lang', lang); } catch(_){}
+    fitSliceLabels();
   }
+
+  let fitPending;
+  window.addEventListener('resize', () => {
+    cancelAnimationFrame(fitPending);
+    fitPending = requestAnimationFrame(fitSliceLabels);
+  });
 
   function detectLang(){
     try { const s = localStorage.getItem('lang'); if (s === 'pl' || s === 'en') return s; } catch(_){}
