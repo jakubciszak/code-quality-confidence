@@ -207,6 +207,51 @@
   .foot-links a:hover{color:var(--accent)}
   .foot-note{font-family:var(--mono);font-size:.74rem;color:var(--text-faint);margin-top:22px}
 
+  /* ---------- terminal panels ---------- */
+  .term-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px}
+  .term-grid>*{min-width:0}
+  .term-card{display:flex;flex-direction:column}
+  .term-card h3{font-size:1.05rem;margin-bottom:6px}
+  .term-card>p{font-size:.92rem;color:var(--text-dim);line-height:1.55;margin-bottom:14px}
+  .term{position:relative;border:1px solid var(--line);border-radius:14px;background:#0a0d12;overflow:hidden;min-width:0;margin-top:auto}
+  .term::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+    background:radial-gradient(ellipse at 50% -20%,#00ff8212,transparent 60%)}
+  .term-bar{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line-soft);background:#ffffff05;position:relative;z-index:1}
+  .term-bar .dots{display:flex;gap:6px}
+  .term-bar .dots i{width:10px;height:10px;border-radius:50%;background:#ffffff1a}
+  .term-bar .lbl{font-family:var(--mono);font-size:.72rem;color:var(--text-faint)}
+  .term-body{margin:0;padding:16px 18px;overflow-x:auto;font-family:var(--mono);font-size:.79rem;line-height:1.85;color:#c9d1d9;white-space:pre;position:relative;z-index:1}
+  .term-body .pr{color:var(--accent);user-select:none}
+  .term-body .cmd{color:#fff}
+  .term-body .g{color:var(--accent)}
+  .term-body .r{color:#ff6b6b}
+  .term-body .y{color:#ffcf5c}
+  .term-body .c{color:var(--accent-cyan)}
+  .term-body .d{color:var(--text-faint)}
+  .term-body .w{color:#fff;font-weight:500}
+
+  /* ---------- walkthrough ---------- */
+  .walk{display:grid;gap:0;position:relative}
+  .step{display:grid;grid-template-columns:44px 1fr;gap:22px;align-items:start;padding-bottom:38px;position:relative}
+  .step:last-child{padding-bottom:0}
+  .step::before{content:"";position:absolute;left:21px;top:44px;bottom:-6px;width:1px;
+    background:linear-gradient(180deg,#00ff8266,#00ff8214);z-index:0}
+  .step:last-child::before{display:none}
+  .step .n{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;flex:none;position:relative;z-index:1;
+    font-family:var(--mono);font-weight:600;font-size:1rem;color:var(--accent);
+    background:#00ff8210;border:1px solid #00ff8240;box-shadow:0 0 22px -6px #00ff8255}
+  .step .body{min-width:0;padding-top:5px}
+  .step .cmd-tag{display:inline-block;font-family:var(--mono);font-size:.8rem;color:var(--accent);
+    background:#00ff820f;border:1px solid #00ff8233;border-radius:7px;padding:2px 9px;margin-bottom:10px}
+  .step h3{font-size:1.14rem;margin-bottom:8px}
+  .step .body>p{font-size:.95rem;color:var(--text-dim);line-height:1.6;max-width:64ch}
+  .step .term{margin-top:14px}
+  @media(max-width:560px){
+    .step{grid-template-columns:36px 1fr;gap:16px}
+    .step::before{left:17px}
+    .step .n{width:36px;height:36px;font-size:.9rem}
+  }
+
   /* reveal */
   .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.2,.7,.3,1),transform .7s cubic-bezier(.2,.7,.3,1)}
   .reveal.in{opacity:1;transform:none}
@@ -238,6 +283,7 @@
     <nav class="nav-links">
       <a href="#how">How it works</a>
       <a href="#skills">Skills</a>
+      <a href="#walkthrough">Example</a>
       <a href="#install">Install</a>
       <a class="nav-cta" href="https://github.com/jakubciszak/code-quality-confidence" target="_blank" rel="noopener">
         <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38v-1.34c-2.23.49-2.7-1.07-2.7-1.07-.36-.93-.89-1.18-.89-1.18-.73-.5.05-.49.05-.49.81.06 1.23.83 1.23.83.72 1.23 1.88.87 2.34.67.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.83-2.15-.08-.2-.36-1.01.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.11.16 1.92.08 2.12.52.56.83 1.28.83 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.19c0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
@@ -363,6 +409,210 @@
     <div class="skill reveal"><div class="cmd">/swiss-cheese:pair</div><div class="desc">A numbered list of hard, break-it questions on your change. Sonnet, read-only — it can't write code.</div></div>
     <div class="skill reveal"><div class="cmd">/swiss-cheese:custom-layer</div><div class="desc">A five-step methodology for building a defense layer the catalog doesn't cover — name the failure mode, pick the cheapest mechanism, implement, analyze the new holes, test.</div></div>
     <div class="skill reveal"><div class="cmd">:layer · :status<br>:knowledge · :audit</div><div class="desc">Manage the stack, render it, wire task sources, and grade the knowledge layers.</div></div>
+  </div>
+</section>
+
+<!-- IN THE TERMINAL -->
+<section id="terminal" class="wrap">
+  <div class="sec-head reveal">
+    <span class="eyebrow">Concrete examples</span>
+    <h2>What each slice actually shows you</h2>
+    <p class="lead">Every layer prints something you can act on — a rendered stack, a zero-token commit block, a ranked review. These are the real outputs, not mockups of a happy path.</p>
+  </div>
+
+  <div class="term-grid">
+    <article class="term-card reveal">
+      <h3>Render the stack</h3>
+      <p><code>/swiss-cheese:status</code> runs <code>layer_status.py</code> and prints your defense layers, their mode, and the <em>named holes</em> each one is blind to — plus the catalog layers you're still missing.</p>
+      <div class="term">
+        <div class="term-bar"><div class="dots"><i></i><i></i><i></i></div><span class="lbl">/swiss-cheese:status</span></div>
+<pre class="term-body"><span class="w"># Swiss Cheese — defense stack</span>
+<span class="d">Gating: block at </span><span class="g">high</span><span class="d">, warn at </span><span class="y">medium</span>
+
+Layer         Mode         Named holes
+lint          <span class="g">🟢 auto</span>      blind to logic &amp; design
+typecheck     <span class="g">🟢 auto</span>      Any/casts bypass
+tests         <span class="g">🟢 auto</span>      only as good as coverage
+guards        <span class="g">🟢 auto</span>      regex patterns lag
+review        <span class="g">🟢 auto</span>      LLM slices hallucinate
+docs          <span class="y">🟡 comment</span>   —
+human-review  <span class="y">🟡 comment</span>   fatigue, rubber-stamping
+
+<span class="w">## Holes in the cheese (missing layers)</span>
+<span class="d">- </span>gitleaks<span class="d">     secrets scanning</span>
+<span class="d">- </span>agent-hooks<span class="d">  instant post-edit checks</span></pre>
+      </div>
+    </article>
+
+    <article class="term-card reveal">
+      <h3>Block a leak at commit — 0 tokens</h3>
+      <p>A <code>PreToolUse</code> hook scans the <em>staged</em> diff as data. If a blocker lands at or above your threshold, the commit is stopped by <code>exit 2</code> — no model, no tokens.</p>
+      <div class="term">
+        <div class="term-bar"><div class="dots"><i></i><i></i><i></i></div><span class="lbl">shell</span></div>
+<pre class="term-body"><span class="pr">$</span> <span class="cmd">git commit -m "add S3 uploader"</span>
+
+<span class="r">[swiss-cheese guards] commit blocked</span> <span class="d">— findings at or above 'high':</span>
+  <span class="r">- [blocker]</span> secrets <span class="c">src/config.py:12</span>
+      possible aws-access-key committed in diff
+  <span class="y">- [high]</span> injection <span class="c">CLAUDE.md</span>
+      modifies agent-control file — poisons
+      downstream layers
+<span class="d">Resolve these or set the guards layer to `comment`.</span>
+
+<span class="d"># commit aborted before the model ever woke up</span></pre>
+      </div>
+    </article>
+
+    <article class="term-card reveal">
+      <h3>Layered review, ranked</h3>
+      <p>Independent read-only lenses review the <em>redacted</em> diff in parallel. The required floor is rule-computed; high-risk paths add <code>staff</code> and escalate it to Opus. Every finding carries a <code>verification</code>.</p>
+      <div class="term">
+        <div class="term-bar"><div class="dots"><i></i><i></i><i></i></div><span class="lbl">/swiss-cheese:review</span></div>
+<pre class="term-body"><span class="d">snapshot</span>  3 files, <span class="g">+120</span> <span class="r">−8</span>   guards <span class="g">✓</span> <span class="d">(1 secret redacted)</span>
+<span class="d">lenses</span>    core · security · tests · <span class="w">staff</span> <span class="d">(+high-risk)</span>
+
+<span class="r">blocker</span> · <span class="c">src/auth/session.py:47</span>
+  Token compared with <span class="w">==</span> — timing oracle on auth.
+  <span class="g">fix</span>   use hmac.compare_digest(token, expected)
+  <span class="d">check  == short-circuits; leaks prefix. (security)</span>
+
+<span class="y">high</span> · <span class="c">src/auth/session.py:12</span>
+  No test covers expired-token rejection.
+  <span class="g">fix</span>   assert 401 on an expired token
+  <span class="d">check  code changed, no tests touched. (tests)</span>
+
+<span class="d">2 findings · block_at=high →</span> <span class="r">do not merge</span></pre>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- WALKTHROUGH -->
+<section id="walkthrough" class="wrap">
+  <div class="sec-head reveal">
+    <span class="eyebrow">Step by step</span>
+    <h2>A real change, end to end</h2>
+    <p class="lead">Ship one authenticated endpoint — <code>GET /api/export</code>, touching a high-risk <code>auth/</code> path — with every slice stacked. Here's the whole run, from empty repo to a merge you trust.</p>
+  </div>
+
+  <div class="walk">
+    <div class="step reveal">
+      <div class="n">1</div>
+      <div class="body">
+        <span class="cmd-tag">/swiss-cheese:init</span>
+        <h3>Set up the stack once</h3>
+        <p>Two probes — <code>repo_probe.py</code> and <code>runner_detector.py</code> — read your languages, manifests and CI, then detect exactly how to run each tool (Makefile → package.json → pyproject → binaries). One round of questions, and it writes <code>.swiss-cheese/config.json</code> (schema v2). It never touches <code>.claude/settings.json</code> itself.</p>
+        <div class="term">
+          <div class="term-bar"><div class="dots"><i></i><i></i><i></i></div><span class="lbl">/swiss-cheese:init</span></div>
+<pre class="term-body"><span class="d">probing repo…</span>
+detected  <span class="g">python</span> · pytest · ruff · mypy · .github/workflows
+runners   test → <span class="w">make test</span>  lint → <span class="w">ruff check .</span>  <span class="d">(high confidence)</span>
+high-risk <span class="c">src/auth/**</span>, <span class="c">src/payments/**</span>, <span class="c">db/migrations/**</span>
+
+<span class="pr">?</span> risk profile  ›  <span class="g">standard</span>
+<span class="pr">?</span> layers        ›  lint typecheck tests guards review docs human-review
+
+<span class="g">✓</span> wrote .swiss-cheese/config.json <span class="d">(7 layers, block_at=high)</span>
+<span class="g">✓</span> appended governance section to CLAUDE.md
+<span class="d">→ proposed a permissions.deny stanza (yours to paste)</span></pre>
+          </div>
+      </div>
+    </div>
+
+    <div class="step reveal">
+      <div class="n">2</div>
+      <div class="body">
+        <span class="cmd-tag">/swiss-cheese:intent</span>
+        <h3>Turn the ticket into a contract — before any code</h3>
+        <p>A Haiku, read-only subagent reconstructs the ticket into intent, acceptance criteria, a test plan, scope guards, a risk class, and a paste-ready <code>AI-disclosure</code> block (which later satisfies the <code>policy</code> guard). It writes no code and stops.</p>
+        <div class="term">
+          <div class="term-bar"><div class="dots"><i></i><i></i><i></i></div><span class="lbl">/swiss-cheese:intent  JIRA-482</span></div>
+<pre class="term-body"><span class="w">Intent</span>       expose account data as CSV, authenticated users only.
+<span class="w">Acceptance</span>   <span class="g">☐</span> 200 + CSV for a valid session
+             <span class="g">☐</span> 401 for missing / expired token
+             <span class="g">☐</span> export scoped to the caller's own account
+<span class="w">Test plan</span>    happy path · expired token · cross-account attempt
+<span class="w">Scope</span>        touch src/auth/**, src/api/export.py only
+<span class="w">Risk</span>         <span class="r">high</span> <span class="d">(auth path + PII in response)</span>
+
+<span class="d">— no code written. run /swiss-cheese:loop to implement —</span></pre>
+          </div>
+      </div>
+    </div>
+
+    <div class="step reveal">
+      <div class="n">3</div>
+      <div class="body">
+        <span class="cmd-tag">/swiss-cheese:loop "JIRA-482 …"</span>
+        <h3>Implement inside the loop</h3>
+        <p>Implement → run the fast scripted layers in one call (<code>check_layers.py --fast</code>) → fix what the tail shows → repeat. <code>ok</code> is computed only from <code>auto</code> layers that <em>failed</em>; a missing binary is <code>skipped</code>, never a silent pass. One honest line per iteration.</p>
+        <div class="term">
+          <div class="term-bar"><div class="dots"><i></i><i></i><i></i></div><span class="lbl">/swiss-cheese:loop</span></div>
+<pre class="term-body"><span class="d">plan → implement GET /api/export + tests</span>
+
+iter 1: lint <span class="g">✅</span> tests <span class="r">❌(2)</span> <span class="d">→ fixed →</span> guards <span class="g">clean</span> → review: <span class="y">1 high</span>
+iter 2: lint <span class="g">✅</span> tests <span class="g">✅</span> <span class="d">→</span> guards <span class="g">clean</span> → review: <span class="g">clean ✅</span>
+
+<span class="g">converged</span> <span class="d">— scripted layers pass, no blocker/high remaining</span></pre>
+          </div>
+      </div>
+    </div>
+
+    <div class="step reveal">
+      <div class="n">4</div>
+      <div class="body">
+        <span class="cmd-tag">git commit</span>
+        <h3>A guard catches the leak you didn't mean to ship</h3>
+        <p>You hardcoded a token while debugging. At <code>git commit</code>, the deterministic guard scans the staged diff, <strong style="color:var(--text-soft);font-weight:500">redacts</strong> the secret into <code>diff.redacted.patch</code>, and blocks — spending zero tokens. Remove it, pull it from env, commit again.</p>
+        <div class="term">
+          <div class="term-bar"><div class="dots"><i></i><i></i><i></i></div><span class="lbl">shell</span></div>
+<pre class="term-body"><span class="pr">$</span> <span class="cmd">git commit -m "wire up export auth"</span>
+<span class="r">[swiss-cheese guards] commit blocked</span> <span class="d">— at or above 'high':</span>
+  <span class="r">- [blocker]</span> secrets <span class="c">src/api/export.py:8</span>: github-pat in diff
+
+<span class="pr">$</span> <span class="cmd">git commit -m "wire up export auth"</span>   <span class="d"># token → env</span>
+<span class="g">[main 9f2a1c7]</span> wire up export auth   <span class="d">2 files changed</span></pre>
+          </div>
+      </div>
+    </div>
+
+    <div class="step reveal">
+      <div class="n">5</div>
+      <div class="body">
+        <span class="cmd-tag">/swiss-cheese:review</span>
+        <h3>The layered review escalates itself</h3>
+        <p>Because the diff touches <code>src/auth/**</code>, the deterministic selector forces the <code>staff</code> lens into the required floor and escalates <code>architecture</code> &amp; <code>staff</code> to Opus. The <code>security</code> lens finds a timing oracle a linter never could — with a concrete fix and a verification.</p>
+        <div class="term">
+          <div class="term-bar"><div class="dots"><i></i><i></i><i></i></div><span class="lbl">/swiss-cheese:review</span></div>
+<pre class="term-body"><span class="d">floor</span>  core security tests <span class="w">staff</span>  <span class="d">→ staff+arch on</span> <span class="c">Opus</span>
+
+<span class="r">blocker</span> · <span class="c">src/auth/session.py:47</span> <span class="d">(security)</span>
+  token checked with <span class="w">==</span> — timing oracle
+  <span class="g">fix</span>  hmac.compare_digest(token, expected)
+
+<span class="pr">$</span> <span class="cmd"># apply fix, re-run</span>
+<span class="d">review:</span> <span class="g">clean ✅</span>  <span class="d">— 0 blocker, 0 high</span></pre>
+          </div>
+      </div>
+    </div>
+
+    <div class="step reveal">
+      <div class="n">6</div>
+      <div class="body">
+        <span class="cmd-tag">git commit · human review</span>
+        <h3>Green, with a human gate that fails closed</h3>
+        <p>Scripted layers pass, guards are clean, the AI review is empty. What's left is the <code>human-review</code> comment layer and the <code>AI-disclosure</code> block in the PR. A finding is only ever retired when a real reason is written to the fail-closed audit log — nothing gets rubber-stamped by silence.</p>
+        <div class="term">
+          <div class="term-bar"><div class="dots"><i></i><i></i><i></i></div><span class="lbl">/swiss-cheese:status</span></div>
+<pre class="term-body">lint <span class="g">✅</span>  typecheck <span class="g">✅</span>  tests <span class="g">✅</span>  guards <span class="g">✅</span>  review <span class="g">✅</span>
+<span class="y">human-review</span> <span class="d">🟡 comment — checklist ready, awaiting a person</span>
+
+<span class="g">✓</span> AI-disclosure block present in the PR body
+<span class="d">A defect would have had to cross all seven slices at once.</span>
+<span class="g">It didn't.</span></pre>
+          </div>
+      </div>
+    </div>
   </div>
 </section>
 
