@@ -93,6 +93,10 @@
   .nav-links{display:flex;align-items:center;gap:30px}
   .nav-links a{font-size:.9rem;color:var(--text-dim);transition:color .2s}
   .nav-links a:hover{color:var(--text)}
+  .nav-blog{display:inline-flex;align-items:center;gap:5px;color:var(--accent)cc!important}
+  .nav-blog svg{transition:transform .2s}
+  .nav-blog:hover{color:var(--accent)!important}
+  .nav-blog:hover svg{transform:translate(1px,-1px)}
   .nav-cta{font-family:var(--mono);font-size:.82rem;font-weight:500;color:var(--accent);
     border:1px solid var(--accent)66;border-radius:99px;padding:8px 16px;transition:.2s;display:inline-flex;align-items:center;gap:7px}
   .nav-cta:hover{background:var(--accent)1a;border-color:var(--accent);box-shadow:0 0 22px #00ff8233}
@@ -297,7 +301,10 @@
       <a href="#skills" data-i18n="nav.skills">Skills</a>
       <a href="#walkthrough" data-i18n="nav.example">Example</a>
       <a href="#install" data-i18n="nav.install">Install</a>
-      <a href="https://miedzykodem.dev" target="_blank" rel="noopener" data-i18n="nav.blog">Blog</a>
+      <a class="nav-blog" href="https://miedzykodem.dev" target="_blank" rel="noopener">
+        <span data-i18n="nav.blog">Blog</span>
+        <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5"/></svg>
+      </a>
       <div class="lang-switch" role="group" aria-label="Language / Język">
         <button type="button" data-set-lang="en" aria-label="English">EN</button>
         <button type="button" data-set-lang="pl" aria-label="Polski">PL</button>
