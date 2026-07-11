@@ -108,9 +108,13 @@
 
   /* ---------- hero ---------- */
   .hero{padding-top:clamp(120px,18vh,190px);padding-bottom:clamp(48px,8vw,90px);text-align:center}
-  .badge{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:.78rem;color:var(--text-dim);
-    border:1px solid var(--line);background:var(--glass);border-radius:99px;padding:7px 15px;margin-bottom:30px}
-  .badge .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:pulse 2.4s ease-in-out infinite}
+  .badge{display:inline-block;text-align:center;line-height:1.7;font-family:var(--mono);
+    font-size:clamp(.66rem,2.7vw,.78rem);color:var(--text-dim);max-width:100%;
+    border:1px solid var(--line);background:var(--glass);border-radius:20px;padding:6px 16px;margin-bottom:30px}
+  .badge .ver{white-space:nowrap}
+  .badge .sep{opacity:.5;margin:0 3px}
+  .badge .dot{display:inline-block;vertical-align:middle;margin-right:7px;position:relative;top:-1px;
+    width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:pulse 2.4s ease-in-out infinite}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
   .hero h1{font-size:clamp(2.5rem,7vw,5rem);font-weight:700;letter-spacing:-.035em;margin-inline:auto;max-width:16ch}
   .hero h1 .grad{background:linear-gradient(120deg,#fff 0%,#00ff82 55%,#00e6ff 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -311,7 +315,7 @@
 
 <!-- HERO -->
 <section class="hero wrap">
-  <div class="badge"><span class="dot"></span> <span data-i18n="hero.badge">swiss-cheese · layered defense for Claude Code ·</span> <span id="version">v0.3.0</span></div>
+  <div class="badge"><span class="dot"></span> <span data-i18n="hero.badge">swiss-cheese · layered defense for Claude Code</span> <span class="ver"><span class="sep" aria-hidden="true">·</span><span id="version">v0.3.0</span></span></div>
   <h1 data-i18n="hero.h1">Ship fewer defects with <span class="grad">layered defense</span></h1>
   <p class="lead" data-i18n="hero.lead">Every quality gate — linting, tests, hooks, AI review, human review — is a slice of Swiss cheese: useful, but full of holes. <strong style="color:var(--text-soft);font-weight:500">swiss-cheese</strong> stacks those slices for Claude Code, cheaply, so a defect only ships when the holes in <em>every</em> slice line up.</p>
 
@@ -764,7 +768,7 @@ git clone https://github.com/jakubciszak/code-quality-confidence.git
     'nav.install': 'Instalacja',
     'nav.blog': 'Blog',
     // hero
-    'hero.badge': 'swiss-cheese · warstwowa obrona dla Claude Code ·',
+    'hero.badge': 'swiss-cheese · warstwowa obrona dla Claude Code',
     'hero.h1': 'Wypuszczaj mniej błędów dzięki <span class="grad">warstwowej obronie</span>',
     'hero.lead': 'Każda bramka jakości — linter, testy, hooki, przegląd AI, przegląd człowieka — jest jak plaster szwajcarskiego sera: przydatny, ale dziurawy. <strong style="color:var(--text-soft);font-weight:500">swiss-cheese</strong> układa te plastry jeden na drugim w Claude Code, i to niewielkim kosztem — więc błąd prześlizgnie się dalej tylko wtedy, gdy dziury w <em>każdym</em> plastrze ułożą się w jednej linii.',
     'hero.quote': 'Nie potrzebujesz doskonałych zabezpieczeń. Wystarczy kilka niedoskonałych — byle <span>ich dziury nigdy się nie pokryły.</span>',
