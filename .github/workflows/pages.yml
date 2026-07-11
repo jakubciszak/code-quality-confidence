@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "docs/**"
+      - ".claude-plugin/marketplace.json"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
@@ -27,6 +28,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Inject plugin version into landing page
+        run: |
+          VERSION=$(jq -r '.metadata.version' .claude-plugin/marketplace.json)
+          if [ -z "$VERSION" ] || [ "$VERSION" = "null" ]; then
+            echo "::error::Could not read .metadata.version from .claude-plugin/marketplace.json"
+            exit 1
+          fi
+          echo "Marketplace version: $VERSION"
+          sed -i -E "s#(<span id=\"version\">)[^<]*(</span>)#\1v${VERSION}\2#" docs/index.html
+          echo "Landing page now shows: $(grep -o '<span id="version">[^<]*</span>' docs/index.html)"
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
