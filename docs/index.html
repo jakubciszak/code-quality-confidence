@@ -43,7 +43,7 @@
   }
 
   *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;overflow-x:hidden}
   body{
     background:var(--bg);
     color:var(--text-soft);
@@ -173,9 +173,10 @@
 
   /* ---------- install ---------- */
   .install-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .install-grid>*{min-width:0}
   @media(max-width:820px){.install-grid{grid-template-columns:1fr}}
   .step-num{font-family:var(--mono);font-size:.78rem;color:var(--accent);letter-spacing:.1em}
-  .code{position:relative;border:1px solid var(--line);border-radius:14px;background:#0a0d12;overflow:hidden;margin-top:12px}
+  .code{position:relative;border:1px solid var(--line);border-radius:14px;background:#0a0d12;overflow:hidden;margin-top:12px;min-width:0}
   .code-bar{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--line-soft);background:#ffffff05}
   .code-bar .dots{display:flex;gap:6px}
   .code-bar .dots i{width:10px;height:10px;border-radius:50%;background:#ffffff1a}
